@@ -1,8 +1,4 @@
 # Push Testing Service
 
-This is under heavy development and not at a stable state to be used/
-
-    npm install -g wpts
-    wpts
-
-This is not an official Google product.
+This is a WIP tool that will hopefully make testing push encryption libraries
+easier regardless of language.

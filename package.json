@@ -4,7 +4,7 @@
   "description": "A service that can be run locally or on a CLI to manage testing of web push in a language agnostic way",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint ./**/*.js",
+    "lint": "eslint '.'",
     "test": "npm run lint && mocha ./test/*.js"
   },
   "author": "",

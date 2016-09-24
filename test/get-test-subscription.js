@@ -22,13 +22,11 @@ const urlsafeBase64 = require('urlsafe-base64');
 require('chai').should();
 
 const bufferVapidKeys = webPush.generateVAPIDKeys();
-console.log(bufferVapidKeys.publicKey);
 
 const VAPID_KEYS = {
   public: urlsafeBase64.encode(bufferVapidKeys.publicKey),
   private: urlsafeBase64.encode(bufferVapidKeys.privateKey)
 };
-console.log(VAPID_KEYS.public);
 
 const GCM_DETAILS = {
   senderId: '653317226796',
@@ -136,23 +134,29 @@ describe('Test get-subscription API', function() {
   };
 
   const sendPushMessage = (suiteId, testId, subscription) => {
-    const expectedPayload = Date.now().toString();
+    const expectedPayload = 'hello';
 
     return new Promise(resolve => {
       setTimeout(resolve, 4000);
     })
     .then(() => {
       webPush.setGCMAPIKey(GCM_DETAILS.apiKey);
+
       const notificationOptions = {
-        payload: expectedPayload,
+        // payload: expectedPayload,
         userPublicKey: subscription.keys.p256dh,
         userAuth: subscription.keys.auth,
         vapid: {
           subject: 'mailto: web-push-testing-service@example.com',
           publicKey: bufferVapidKeys.publicKey,
           privateKey: bufferVapidKeys.privateKey
-        }
+        },
+        TTL: 60 * 1000
       };
+
+      console.log(subscription.endpoint);
+      console.log(notificationOptions);
+
       return webPush.sendNotification(subscription.endpoint, notificationOptions)
       .catch(err => {
         console.log(err);
@@ -393,7 +397,7 @@ describe('Test get-subscription API', function() {
       if (process.env.TRAVIS) {
         this.retries(3);
       }
-      this.timeout(10000);
+      this.timeout(120000);
 
       return fetch(`http://localhost:8090/api/get-subscription/`, {
         method: 'post',
@@ -469,7 +473,7 @@ describe('Test get-subscription API', function() {
       if (process.env.TRAVIS) {
         this.retries(3);
       }
-      this.timeout(120000);
+      this.timeout(60000);
 
       return fetch(`http://localhost:8090/api/get-subscription/`, {
         method: 'post',

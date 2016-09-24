@@ -53,7 +53,7 @@ webPushTestingService.startService()
   logHelper.info(LINE);
   logHelper.info(``);
   logHelper.info(`    Starting Service at ` +
-      `http://${url}`);
+      `${url}`);
   logHelper.info(``);
   logHelper.info(LINE);
   logHelper.info(``);

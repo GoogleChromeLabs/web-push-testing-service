@@ -157,14 +157,6 @@ class WPTS {
       return;
     }
 
-    if (webDriverInstance.getSeleniumBrowserId() === 'chrome' &&
-      webDriverInstance.getVersionNumber() === 54) {
-      APIServer.sendErrorResponse(res, 'bad_browser_support',
-        `Unforuntately Firefox version 48 and below has poor selenium ` +
-        `support and isn't supported as a result.`);
-      return;
-    }
-
     const optionalArgs = {};
     if (args.vapidPublicKey) {
       if (typeof args.vapidPublicKey !== 'string') {
@@ -299,9 +291,9 @@ class WPTS {
         urlGETArgs = '?' + urlArgs.join('&');
       }
 
-      console.log('URLGetArgs: ', urlGETArgs);
+      console.log('URL: ', this._apiServer.getUrl() + urlGETArgs);
 
-      return driver.get(this._apiServer.getUrl() + urlGETArgs)
+      return driver.get(this._apiServer.getUrl() + '/' + urlGETArgs)
       .then(() => {
         return driver.wait(() => {
           return driver.executeScript(() => {
