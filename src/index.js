@@ -17,6 +17,7 @@
 
 const seleniumAssistant = require('selenium-assistant');
 const fs = require('fs');
+const del = require('del');
 const mkdirp = require('mkdirp');
 const seleniumFirefox = require('selenium-webdriver/firefox');
 
@@ -241,43 +242,45 @@ class WPTS {
   }
 
   initiateTestInstance(testSuiteId, optionalArgs, seleniumAssistantBrowser) {
-    if (seleniumAssistantBrowser.getSeleniumBrowserId() === 'chrome' ||
-      seleniumAssistantBrowser.getSeleniumBrowserId() === 'opera') {
-      /* eslint-disable camelcase */
-      const blinkPreferences = {
-        profile: {
-          content_settings: {
-            exceptions: {
-              notifications: {}
+    const tempPreferenceFile = './temp/blink';
+    return del('./temp')
+    .then(() => {
+      if (seleniumAssistantBrowser.getSeleniumBrowserId() === 'chrome' ||
+        seleniumAssistantBrowser.getSeleniumBrowserId() === 'opera') {
+        /* eslint-disable camelcase */
+        const blinkPreferences = {
+          profile: {
+            content_settings: {
+              exceptions: {
+                notifications: {}
+              }
             }
           }
-        }
-      };
-      blinkPreferences.profile.content_settings.exceptions
-        .notifications[this._apiServer.getUrl() + ',*'] = {
-          last_used: 1464967088.793686,
-          setting: [1, 1464967088.793686]
         };
-      /* eslint-enable camelcase */
+        blinkPreferences.profile.content_settings.exceptions
+          .notifications[this._apiServer.getUrl() + ',*'] = {
+            setting: 1
+          };
 
-      // Write to file
-      const tempPreferenceFile = './temp/blink/';
-      mkdirp.sync(tempPreferenceFile);
+        // Write to file
+        mkdirp.sync(`${tempPreferenceFile}/Default`);
 
-      fs.writeFileSync(`${tempPreferenceFile}/Preferences`,
-        JSON.stringify(blinkPreferences));
+        fs.writeFileSync(`${tempPreferenceFile}/Default/Preferences`,
+          JSON.stringify(blinkPreferences));
 
-      const options = seleniumAssistantBrowser.getSeleniumOptions();
-      options.addArguments(`user-data-dir=${tempPreferenceFile}/`);
-    } else if (seleniumAssistantBrowser.getSeleniumBrowserId() === 'firefox') {
-      const ffProfile = new seleniumFirefox.Profile();
-      ffProfile.setPreference('dom.push.testing.ignorePermission', true);
-      ffProfile.setPreference('notification.prompt.testing', true);
-      ffProfile.setPreference('notification.prompt.testing.allow', true);
-      seleniumAssistantBrowser.getSeleniumOptions().setProfile(ffProfile);
-    }
+        const options = seleniumAssistantBrowser.getSeleniumOptions();
+        options.addArguments(`user-data-dir=${tempPreferenceFile}/`);
+      } else if (seleniumAssistantBrowser.getSeleniumBrowserId() ===
+        'firefox') {
+        const ffProfile = new seleniumFirefox.Profile();
+        ffProfile.setPreference('dom.push.testing.ignorePermission', true);
+        ffProfile.setPreference('notification.prompt.testing', true);
+        ffProfile.setPreference('notification.prompt.testing.allow', true);
+        seleniumAssistantBrowser.getSeleniumOptions().setProfile(ffProfile);
+      }
 
-    return seleniumAssistantBrowser.getSeleniumDriver()
+      return seleniumAssistantBrowser.getSeleniumDriver();
+    })
     .then(driver => {
       const testSuite = this._testSuites[testSuiteId];
       const testInstanceId = testSuite.addTestInstance(driver);

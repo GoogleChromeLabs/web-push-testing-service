@@ -52,17 +52,19 @@ function waitForActive(registration) {
   });
 }
 
-function base64UrlToUint8Array(base64UrlData) {
-  const padding = '='.repeat((4 - base64UrlData.length % 4) % 4);
-  const base64 = (base64UrlData + padding)
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
     .replace(/\-/g, '+')
     .replace(/_/g, '/');
-  const rawData = atob(base64);
-  const buffer = new Uint8Array(rawData.length);
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
   for (let i = 0; i < rawData.length; ++i) {
-    buffer[i] = rawData.charCodeAt(i);
+    outputArray[i] = rawData.charCodeAt(i);
   }
-  return buffer;
+  return outputArray;
 }
 
 var vapidElement = document.querySelector('.js-vapid-element');
@@ -88,10 +90,11 @@ if (getParamsString.length > 0) {
 window.PUSH_TESTING_SERVICE.getArgs = getParamsArgs;
 
 if (getParamsArgs.vapidPublicKey) {
-  vapidElement.textContent = getParamsArgs.vapidPublicKey + '     ' +
-    base64UrlToUint8Array(
-      window.PUSH_TESTING_SERVICE.getArgs.vapidPublicKey
-    );
+  const convertedVapidKey = urlBase64ToUint8Array(
+    window.PUSH_TESTING_SERVICE.getArgs.vapidPublicKey
+  );
+  vapidElement.textContent = `"${getParamsArgs.vapidPublicKey}"    ` +
+    `"${convertedVapidKey}"`;
 } else {
   vapidElement.textContent = 'None';
 }
@@ -140,10 +143,11 @@ if (navigator.serviceWorker) {
       };
       if (window.PUSH_TESTING_SERVICE.getArgs.vapidPublicKey) {
         subscribeOptions.applicationServerKey =
-          base64UrlToUint8Array(
+          urlBase64ToUint8Array(
             window.PUSH_TESTING_SERVICE.getArgs.vapidPublicKey
           );
-        console.log(subscribeOptions.applicationServerKey);
+        logMessage(window.PUSH_TESTING_SERVICE.getArgs.vapidPublicKey);
+        logMessage(subscribeOptions.applicationServerKey);
       }
 
       return registration.pushManager.subscribe(subscribeOptions)

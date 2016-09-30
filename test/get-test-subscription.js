@@ -17,16 +17,13 @@
 
 const fetch = require('node-fetch');
 const webPush = require('web-push');
-const urlsafeBase64 = require('urlsafe-base64');
 
 require('chai').should();
 
-const bufferVapidKeys = webPush.generateVAPIDKeys();
-
-const VAPID_KEYS = {
-  public: urlsafeBase64.encode(bufferVapidKeys.publicKey),
-  private: urlsafeBase64.encode(bufferVapidKeys.privateKey)
-};
+const VAPID_KEYS = webPush.generateVAPIDKeys();
+console.log('-------------- Public VAPID Key');
+console.log(VAPID_KEYS.publicKey);
+console.log('-------------- Public VAPID Key END');
 
 const GCM_DETAILS = {
   senderId: '653317226796',
@@ -141,23 +138,22 @@ describe('Test get-subscription API', function() {
     })
     .then(() => {
       webPush.setGCMAPIKey(GCM_DETAILS.apiKey);
+      webPush.setVapidDetails(
+        'mailto: web-push-testing-service@example.com',
+        VAPID_KEYS.publicKey,
+        VAPID_KEYS.privateKey
+      );
 
-      const notificationOptions = {
-        // payload: expectedPayload,
-        userPublicKey: subscription.keys.p256dh,
-        userAuth: subscription.keys.auth,
-        vapid: {
-          subject: 'mailto: web-push-testing-service@example.com',
-          publicKey: bufferVapidKeys.publicKey,
-          privateKey: bufferVapidKeys.privateKey
-        },
-        TTL: 60 * 1000
-      };
+      /** const webpushCLI = `web-push send-notification --endpoint=${subscription.endpoint} ` +
+        `--key=${subscription.keys.p256dh} --auth=${subscription.keys.auth} ` +
+        `--vapid-subject="mailto: web-push-testing-service@example.com" ` +
+        `--vapid-pubkey=${VAPID_KEYS.publicKey} --vapid-pvtkey=${VAPID_KEYS.privateKey}`;
 
-      console.log(subscription.endpoint);
-      console.log(notificationOptions);
+      console.log();
+      console.log(webpushCLI);
+      console.log();**/
 
-      return webPush.sendNotification(subscription.endpoint, notificationOptions)
+      return webPush.sendNotification(subscription, expectedPayload)
       .catch(err => {
         console.log(err);
         throw err;
@@ -165,7 +161,7 @@ describe('Test get-subscription API', function() {
     })
     .then(() => {
       return new Promise(resolve => {
-        setTimeout(resolve, 1000);
+        setTimeout(resolve, 3000);
       });
     })
     .then(() => {
@@ -438,7 +434,7 @@ describe('Test get-subscription API', function() {
       if (process.env.TRAVIS) {
         this.retries(3);
       }
-      this.timeout(10000);
+      this.timeout(120000);
 
       return fetch(`http://localhost:8090/api/get-subscription/`, {
         method: 'post',
@@ -449,7 +445,7 @@ describe('Test get-subscription API', function() {
           testSuiteId: globalTestSuiteId,
           browserName: browserVariant.browser,
           browserVersion: browserVariant.version,
-          vapidPublicKey: VAPID_KEYS.public
+          vapidPublicKey: VAPID_KEYS.publicKey
         })
       })
       .then(response => {
@@ -519,7 +515,7 @@ describe('Test get-subscription API', function() {
           testSuiteId: globalTestSuiteId,
           browserName: browserVariant.browser,
           browserVersion: browserVariant.version,
-          vapidPublicKey: VAPID_KEYS.public,
+          vapidPublicKey: VAPID_KEYS.publicKey,
           gcmSenderId: GCM_DETAILS.senderId
         })
       })
