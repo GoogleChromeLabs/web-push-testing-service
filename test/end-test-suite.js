@@ -25,7 +25,8 @@ describe('Test end-test-suite API', function() {
   const globalWPTS = new WPTS(8090);
 
   beforeEach(function() {
-    this.timeout(180000);
+    // 8 Minures to complete
+    this.timeout(60 * 8 * 1000);
     return globalWPTS.startService();
   });
 
