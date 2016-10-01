@@ -500,7 +500,7 @@ describe('Test get-subscription API', function() {
       if (process.env.TRAVIS) {
         this.retries(3);
       }
-      this.timeout(10000);
+      this.timeout(120000);
 
       return fetch(`http://localhost:8090/api/get-subscription/`, {
         method: 'post',
