@@ -21,9 +21,6 @@ const webPush = require('web-push');
 require('chai').should();
 
 const VAPID_KEYS = webPush.generateVAPIDKeys();
-console.log('-------------- Public VAPID Key');
-console.log(VAPID_KEYS.publicKey);
-console.log('-------------- Public VAPID Key END');
 
 const GCM_DETAILS = {
   senderId: '653317226796',
@@ -155,7 +152,6 @@ describe('Test get-subscription API', function() {
 
       return webPush.sendNotification(subscription, expectedPayload)
       .catch(err => {
-        console.log(err);
         throw err;
       });
     })
