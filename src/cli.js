@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 /**
  * Copyright 2016 Google Inc.
  *
@@ -29,6 +31,22 @@ cliArgKeys.forEach(argKey => {
     case '_':
       // Ignore this as it's not user input
       break;
+    case 'h':
+    case 'help':
+    /* eslint-disable max-len */
+      console.log('web-push-testing-service');
+      console.log('');
+      console.log('Usage:');
+      console.log('    web-push-testing-service [options]');
+      console.log('');
+      console.log('Options:');
+      console.log('    -h --help                     Show this screen.');
+      console.log('    -p --port <Port Number>       Change port the service is run on.');
+      console.log('');
+      process.exit(0);
+      /* eslint-enable line-length */
+      break;
+    case 'p':
     case 'port':
       if (typeof cliArgs[argKey] === 'number') {
         serviceValues.port = cliArgs[argKey];
@@ -43,6 +61,8 @@ cliArgKeys.forEach(argKey => {
       break;
   }
 });
+
+logHelper.info('Starting service....');
 
 const webPushTestingService = new WPTS(serviceValues.port);
 webPushTestingService.startService()
