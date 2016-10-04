@@ -26,11 +26,17 @@ available via a JSON API, simplifying the whole process.
 
 ## Install
 
-// TODO: Publish on NPM
+    npm install web-push-testing-service -g
 
 ## Usage
 
-// TODO: CLI command to start server
+Must of the time simply running `web-push-testing-service` will suffice but
+you can customise the port number with a option like below:
+
+    web-push-testing-service -p 8090
+
+Once the service is started you can make POST requests in the following
+flow to write integration tests for your push library.
 
 Regardless of the API you call, you'll receive JSON and the top level parameter
 will be either 'data' or 'error'. Data will change depending on the API called

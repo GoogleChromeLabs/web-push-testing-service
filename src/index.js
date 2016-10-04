@@ -238,7 +238,8 @@ class WPTS {
     })
     .catch(err => {
       APIServer.sendErrorResponse(res, 'web_driver_error', 'An error ' +
-        'occured while attempting to check the notification status.');
+        'occured while attempting to check the notification status. ' +
+        err.message);
     });
   }
 
