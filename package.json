@@ -1,11 +1,14 @@
 {
   "name": "wpts",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "A service that can be run locally or on a CLI to manage testing of web push in a language agnostic way",
   "main": "index.js",
   "scripts": {
     "lint": "eslint '.'",
-    "test": "npm run lint && mocha ./test/*.js"
+    "test": "npm run lint && mocha ./test/*.js",
+    "build": "echo 'No Build Step.'",
+    "bundle": "sh ./utils/bundle.sh",
+    "publish-release": "publish-release.sh"
   },
   "author": "",
   "license": "Apache-2.0",
@@ -27,6 +30,7 @@
     "mkdirp": "^0.5.1",
     "mocha": "^3.0.2",
     "node-fetch": "^1.5.3",
+    "npm-publish-scripts": "^2.0.7",
     "web-push": "^3.0.0"
   }
 }
