@@ -18,13 +18,46 @@
 'use strict';
 
 const minimist = require('minimist');
+const storage = require('node-persist');
+const execSync = require('child_process').execSync;
 const WPTS = require('./index.js');
-
 const logHelper = require('./helper/log-helper.js');
+
+const printHelpText = () => {
+  /* eslint-disable max-len */
+  console.log('web-push-testing-service');
+  console.log('');
+  console.log('Usage:');
+  console.log('    web-push-testing-service [command] [options]');
+  console.log('');
+  console.log('Command:');
+  console.log('    download-browsers');
+  console.log('    start <service-id>');
+  console.log('    stop <service-id>');
+  console.log('');
+  console.log('Options:');
+  console.log('    -h --help                     Show this screen.');
+  console.log('    -p --port <Port Number>       Change port the service is run on.');
+  console.log('');
+  /* eslint-enable line-length */
+};
+
+const stopService = serviceId => {
+  const servicePID = storage.getItemSync(serviceId);
+  if (servicePID !== null) {
+    try {
+      execSync(`kill -9 ${servicePID} > /dev/null 2>&1`);
+    } catch (err) {
+      // NOOP
+    }
+  }
+  storage.removeItemSync(serviceId);
+};
 
 const serviceValues = {};
 
 const cliArgs = minimist(process.argv.slice(2));
+
 const cliArgKeys = Object.keys(cliArgs);
 cliArgKeys.forEach(argKey => {
   switch (argKey) {
@@ -33,18 +66,8 @@ cliArgKeys.forEach(argKey => {
       break;
     case 'h':
     case 'help':
-    /* eslint-disable max-len */
-      console.log('web-push-testing-service');
-      console.log('');
-      console.log('Usage:');
-      console.log('    web-push-testing-service [options]');
-      console.log('');
-      console.log('Options:');
-      console.log('    -h --help                     Show this screen.');
-      console.log('    -p --port <Port Number>       Change port the service is run on.');
-      console.log('');
+      printHelpText();
       process.exit(0);
-      /* eslint-enable line-length */
       break;
     case 'p':
     case 'port':
@@ -62,19 +85,69 @@ cliArgKeys.forEach(argKey => {
   }
 });
 
-logHelper.info('Starting service....');
+if (cliArgs._.length === 0) {
+  printHelpText();
+  process.exit(1);
+}
 
 const webPushTestingService = new WPTS(serviceValues.port);
-webPushTestingService.startService()
-.then(url => {
-  const LINE = '---------------------------------' +
-    '------------------------';
-  logHelper.info(``);
-  logHelper.info(LINE);
-  logHelper.info(``);
-  logHelper.info(`    Starting Service at ` +
-      `${url}`);
-  logHelper.info(``);
-  logHelper.info(LINE);
-  logHelper.info(``);
-});
+
+switch (cliArgs._[0]) {
+  case 'download-browsers':
+    logHelper.info('Starting browser download....');
+    webPushTestingService.downloadBrowsers();
+    break;
+  case 'start': {
+    if (cliArgs._.length === 2) {
+      const serviceId = cliArgs._[1];
+      storage.initSync();
+
+      stopService(serviceId);
+
+      storage.setItemSync(serviceId, process.pid);
+      logHelper.info('Starting service....');
+      webPushTestingService.startService()
+      .then(url => {
+        const LINE = '---------------------------------' +
+          '------------------------';
+        logHelper.info(``);
+        logHelper.info(LINE);
+        logHelper.info(``);
+        logHelper.info(`    Starting Service at ` +
+            `${url}`);
+        logHelper.info(``);
+        logHelper.info(LINE);
+        logHelper.info(``);
+      });
+    } else {
+      console.log('You must include an ID so this service can be stopped at ' +
+        'later on with \'stop-service\'');
+      process.exit(1);
+    }
+    break;
+  }
+  case 'stop': {
+    if (cliArgs._.length === 2) {
+      const serviceId = cliArgs._[1];
+      storage.initSync();
+      const servicePID = storage.getItemSync(serviceId);
+      if (!servicePID) {
+        logHelper.error(`Unable to find a service with ID '${serviceId}'`);
+        process.exit(0);
+        break;
+      }
+
+      logHelper.info('Stopping service....');
+      stopService(serviceId);
+    } else {
+      console.log('You must include an ID so this service can be stopped at ' +
+        'later on with \'stop-service\'');
+      process.exit(1);
+    }
+    break;
+  }
+  default:
+    printHelpText();
+    process.exit(1);
+    break;
+}

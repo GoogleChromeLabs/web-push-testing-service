@@ -53,7 +53,7 @@ class WPTS {
       this.getNotificationStatus.bind(this));
   }
 
-  startService() {
+  downloadBrowsers() {
     return Promise.all([
       seleniumAssistant.downloadBrowser('firefox', 'stable', true),
       seleniumAssistant.downloadBrowser('firefox', 'beta', true),
@@ -61,10 +61,11 @@ class WPTS {
       seleniumAssistant.downloadBrowser('chrome', 'stable', true),
       seleniumAssistant.downloadBrowser('chrome', 'beta', true),
       seleniumAssistant.downloadBrowser('chrome', 'unstable', true)
-    ])
-    .then(() => {
-      return this._apiServer.startListening();
-    });
+    ]);
+  }
+
+  startService() {
+    return this._apiServer.startListening();
   }
 
   endService() {
