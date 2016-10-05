@@ -1,0 +1,41 @@
+{
+  "name": "web-push-testing-service",
+  "version": "0.0.7",
+  "description": "A service that can be run locally or on a CLI to manage testing of web push in a language agnostic way",
+  "main": "index.js",
+  "bin": {
+    "web-push-testing-service": "./src/cli.js"
+  },
+  "scripts": {
+    "lint": "eslint '.'",
+    "test": "npm run lint && mocha ./test/*.js",
+    "build": "echo 'No Build Step.'",
+    "bundle": "sh ./utils/bundle.sh",
+    "publish-release": "publish-release.sh",
+    "publish-docs": "echo 'No Docs to Publish'"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "chalk": "^1.1.3",
+    "chromedriver": "^2.24.1",
+    "del": "^2.2.2",
+    "express": "^4.14.0",
+    "geckodriver": "^1.1.3",
+    "minimist": "^1.2.0",
+    "node-persist": "^2.0.2",
+    "selenium-assistant": "^1.0.0",
+    "selenium-webdriver": "^3.0.0-beta-2"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.0.1",
+    "eslint-config-google": "^0.6.0",
+    "mkdirp": "^0.5.1",
+    "mocha": "^3.0.2",
+    "node-fetch": "^1.5.3",
+    "npm-publish-scripts": "^2.0.7",
+    "web-push": "^3.0.0"
+  }
+}
