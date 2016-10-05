@@ -30,12 +30,20 @@ available via a JSON API, simplifying the whole process.
 
 ## Usage
 
-Must of the time simply running `web-push-testing-service` will suffice but
-you can customise the port number with a option like below:
+To start the push testing service run:
 
-    web-push-testing-service -p 8090
+    web-push-testing-service start <Service Name>
 
-Once the service is started you can make POST requests in the following
+This will start the service and run it in the background on port 8090. If
+you need to run it on a different port, you can use the port flag:
+
+    web-push-testing-service start <Service Name> -p 9000
+
+Once you've finished using the service you just need run the stop command.
+
+    web-push-testing-service start <Service Name>
+
+With the service started you can make POST requests in the following
 flow to write integration tests for your push library.
 
 Regardless of the API you call, you'll receive JSON and the top level parameter
