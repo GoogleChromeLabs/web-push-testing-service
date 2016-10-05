@@ -19,7 +19,9 @@
 
 const minimist = require('minimist');
 const storage = require('node-persist');
+const path = require('path');
 const execSync = require('child_process').execSync;
+const spawn = require('child_process').spawn;
 const WPTS = require('./index.js');
 const logHelper = require('./helper/log-helper.js');
 
@@ -38,6 +40,7 @@ const printHelpText = () => {
   console.log('Options:');
   console.log('    -h --help                     Show this screen.');
   console.log('    -p --port <Port Number>       Change port the service is run on.');
+  console.log('       --version                  Current version of CLI.');
   console.log('');
   /* eslint-enable line-length */
 };
@@ -79,6 +82,10 @@ cliArgKeys.forEach(argKey => {
         process.exit(1);
       }
       break;
+    case 'version':
+      console.log(require('../package.json').version);
+      process.exit(0);
+      break;
     default:
       logHelper.info(`Ignoring input '${argKey}'`);
       break;
@@ -101,23 +108,28 @@ switch (cliArgs._[0]) {
     if (cliArgs._.length === 2) {
       const serviceId = cliArgs._[1];
       storage.initSync();
-
       stopService(serviceId);
 
-      storage.setItemSync(serviceId, process.pid);
       logHelper.info('Starting service....');
-      webPushTestingService.startService()
-      .then(url => {
-        const LINE = '---------------------------------' +
-          '------------------------';
-        logHelper.info(``);
-        logHelper.info(LINE);
-        logHelper.info(``);
-        logHelper.info(`    Starting Service at ` +
-            `${url}`);
-        logHelper.info(``);
-        logHelper.info(LINE);
-        logHelper.info(``);
+
+      // This is slightly hacky, but moves actual server to a bg process.
+      const serviceProcess = spawn('node', [
+        path.join(__dirname, 'detached-service.js'),
+        JSON.stringify(serviceValues)
+      ], {
+        detached: true,
+        stdio: ['ipc']
+      });
+
+      serviceProcess.on('message', function(message) {
+        if (message.serverStarted) {
+          storage.setItemSync(serviceId, message.pid);
+          serviceProcess.unref();
+          process.exit(0);
+        } else {
+          logHelper.error(message.errorMessage);
+          process.exit(1);
+        }
       });
     } else {
       console.log('You must include an ID so this service can be stopped at ' +

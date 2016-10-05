@@ -23,11 +23,11 @@ class LogHelper {
   }
 
   error(msg) {
-    console.warn(chalk.red('[ERROR]: ') + msg);
+    console.error(chalk.red('[ERROR]: ') + msg);
   }
 
   info(msg) {
-    console.warn(chalk.dim('[INFO]: ') + msg);
+    console.log(chalk.dim('[INFO]: ') + msg);
   }
 }
 
