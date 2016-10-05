@@ -39,7 +39,7 @@ you need to run it on a different port, you can use the port flag:
 
     web-push-testing-service start <Service Name> -p 9000
 
-Once you've finished using the service you just need run the stop command.
+Once you've finished using the service you just need run the `stop` command.
 
     web-push-testing-service start <Service Name>
 

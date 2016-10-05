@@ -65,7 +65,10 @@ class WPTS {
   }
 
   startService() {
-    return this._apiServer.startListening();
+    return this.downloadBrowsers()
+    .then(() => {
+      return this._apiServer.startListening();
+    });
   }
 
   endService() {

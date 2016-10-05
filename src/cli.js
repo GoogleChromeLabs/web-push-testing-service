@@ -22,7 +22,6 @@ const storage = require('node-persist');
 const path = require('path');
 const execSync = require('child_process').execSync;
 const spawn = require('child_process').spawn;
-const WPTS = require('./index.js');
 const logHelper = require('./helper/log-helper.js');
 
 const printHelpText = () => {
@@ -33,7 +32,6 @@ const printHelpText = () => {
   console.log('    web-push-testing-service [command] [options]');
   console.log('');
   console.log('Command:');
-  console.log('    download-browsers');
   console.log('    start <service-id>');
   console.log('    stop <service-id>');
   console.log('');
@@ -97,13 +95,7 @@ if (cliArgs._.length === 0) {
   process.exit(1);
 }
 
-const webPushTestingService = new WPTS(serviceValues.port);
-
 switch (cliArgs._[0]) {
-  case 'download-browsers':
-    logHelper.info('Starting browser download....');
-    webPushTestingService.downloadBrowsers();
-    break;
   case 'start': {
     if (cliArgs._.length === 2) {
       const serviceId = cliArgs._[1];
