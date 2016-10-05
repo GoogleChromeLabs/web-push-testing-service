@@ -117,6 +117,7 @@ switch (cliArgs._[0]) {
         if (message.serverStarted) {
           storage.setItemSync(serviceId, message.pid);
           serviceProcess.unref();
+          logHelper.info('Service Running');
           process.exit(0);
         } else {
           logHelper.error(message.errorMessage);
