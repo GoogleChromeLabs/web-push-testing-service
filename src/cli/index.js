@@ -28,6 +28,8 @@ const logHelper = require('../helper/log-helper.js');
 class WPTSCLI {
   constructor() {
     storage.initSync();
+
+    this._debugMode = false;
   }
 
   argv(argv) {

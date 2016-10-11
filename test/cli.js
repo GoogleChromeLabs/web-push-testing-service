@@ -27,6 +27,7 @@ describe('Test Command Line Interface', function() {
   const originalLog = console.log;
 
   let globalExitCode = -1;
+  let globalServiceName = null;
   let globalLogs = [];
 
   const startLogCapture = () => {
@@ -52,6 +53,13 @@ describe('Test Command Line Interface', function() {
   beforeEach(function() {
     globalLogs = [];
     globalExitCode = -1;
+  });
+
+  afterEach(function() {
+    if (globalServiceName) {
+      new CLI().argv(['stop', globalServiceName]);
+      globalServiceName = null;
+    }
   });
 
   it('should be able to require the cli from package.json', function() {
@@ -94,7 +102,7 @@ describe('Test Command Line Interface', function() {
   const createFullFlowTest = function(additionalArgs) {
     return function() {
       this.timeout(10 * 60 * 1000);
-      const serviceName = 'unit-test-' + Date.now();
+      globalServiceName = 'unit-test-' + Date.now();
 
       return new Promise(resolve => {
         process.exit = code => {
@@ -107,7 +115,7 @@ describe('Test Command Line Interface', function() {
           args.push(additionalArgs);
         }
 
-        new CLI().argv(['start', serviceName]);
+        new CLI().argv(['start', globalServiceName]);
       })
       .then(() => {
         globalExitCode.should.equal(0);
@@ -144,7 +152,7 @@ describe('Test Command Line Interface', function() {
             resolve();
           };
 
-          new CLI().argv(['stop', serviceName]);
+          new CLI().argv(['stop', globalServiceName]);
         });
       })
       .then(() => {
@@ -161,7 +169,7 @@ describe('Test Command Line Interface', function() {
 
   it('should return an error if the port is already in use', function() {
     this.timeout(10 * 60 * 1000);
-    const serviceName = 'unit-test-' + Date.now();
+    globalServiceName = 'unit-test-' + Date.now();
 
     return new Promise(resolve => {
       process.exit = code => {
@@ -169,10 +177,37 @@ describe('Test Command Line Interface', function() {
         resolve();
       };
 
-      new CLI().argv(['start', serviceName, '-p', '8081']);
+      new CLI().argv(['start', globalServiceName, '-p', '8081']);
+    })
+    .then(() => {
+      globalExitCode.should.equal(0);
+    })
+    .then(() => {
+      return new Promise(resolve => {
+        globalExitCode = -1;
+
+        process.exit = code => {
+          globalExitCode = code;
+          resolve();
+        };
+
+        new CLI().argv(['start', globalServiceName + '-2', '-p', '8081']);
+      });
     })
     .then(() => {
       globalExitCode.should.equal(1);
+    })
+    .then(() => {
+      return new Promise(resolve => {
+        globalExitCode = -1;
+
+        process.exit = code => {
+          globalExitCode = code;
+          resolve();
+        };
+
+        new CLI().argv(['stop', globalServiceName]);
+      });
     });
   });
 });
