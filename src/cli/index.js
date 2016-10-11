@@ -72,6 +72,7 @@ class WPTSCLI {
             'stopped later on with \'stop <service name>\'');
           process.exit(1);
         }
+
         this.startService(args[0], flags);
         break;
       case 'stop': {
@@ -108,7 +109,7 @@ class WPTSCLI {
 
       const options = {};
       if (flags.p || flags.port) {
-        options.port = flags.port;
+        options.port = flags.p || flags.port;
       }
 
       let stdioArgs = ['ipc'];

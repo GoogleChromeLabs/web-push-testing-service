@@ -16,18 +16,29 @@
 'use strict';
 
 const chalk = require('chalk');
+const winston = require('winston');
 
 class LogHelper {
+  constructor() {
+    winston.add(winston.transports.File, {
+      filename: 'web-push-testing-service.log'
+    });
+    winston.remove(winston.transports.Console);
+  }
+
   warn(msg) {
     console.warn(chalk.yellow('[WARNING]: ') + msg);
+    winston.warn(msg);
   }
 
   error(msg) {
     console.error(chalk.red('[ERROR]: ') + msg);
+    winston.error(msg);
   }
 
   info(msg) {
     console.log(chalk.dim('[INFO]: ') + msg);
+    winston.info(msg);
   }
 }
 

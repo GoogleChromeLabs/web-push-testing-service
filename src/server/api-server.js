@@ -83,7 +83,8 @@ class APIServer extends EventEmitter {
       );
 
       this._expressServer.on('error', err => {
-        logHelper.error(`Unable to start service at ${this.getUrl()}`);
+        logHelper.error(`Unable to start service at ${this.getUrl()}. ` +
+          `${err.message}`);
         reject(err);
       });
     });

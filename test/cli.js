@@ -91,7 +91,75 @@ describe('Test Command Line Interface', function() {
     });
   });
 
-  it('should start and stop service correctly', function() {
+  const createFullFlowTest = function(additionalArgs) {
+    return function() {
+      this.timeout(10 * 60 * 1000);
+      const serviceName = 'unit-test-' + Date.now();
+
+      return new Promise(resolve => {
+        process.exit = code => {
+          globalExitCode = code;
+          resolve();
+        };
+
+        const args = [];
+        if (additionalArgs) {
+          args.push(additionalArgs);
+        }
+
+        new CLI().argv(['start', serviceName]);
+      })
+      .then(() => {
+        globalExitCode.should.equal(0);
+
+        return fetch('http://localhost:8090/api/start-test-suite/', {
+          method: 'POST'
+        });
+      })
+      .then(response => {
+        return response.json();
+      })
+      .then(response => {
+        return fetch('http://localhost:8090/api/end-test-suite/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            testSuiteId: response.data.testSuiteId
+          })
+        });
+      })
+      .then(response => {
+        return response.json();
+      })
+      .then(response => {
+        (response.data.success).should.equal(true);
+
+        return new Promise(resolve => {
+          globalExitCode = -1;
+
+          process.exit = code => {
+            globalExitCode = code;
+            resolve();
+          };
+
+          new CLI().argv(['stop', serviceName]);
+        });
+      })
+      .then(() => {
+        globalExitCode.should.equal(0);
+      });
+    };
+  };
+
+  it('should start and stop service correctly', createFullFlowTest());
+
+  it('should start and stop service correctly with p flag', createFullFlowTest(['-p', 8081]));
+
+  it('should start and stop service correctly with port flag', createFullFlowTest(['--port', 8082]));
+
+  it('should return an error if the port is already in use', function() {
     this.timeout(10 * 60 * 1000);
     const serviceName = 'unit-test-' + Date.now();
 
@@ -101,48 +169,10 @@ describe('Test Command Line Interface', function() {
         resolve();
       };
 
-      new CLI().argv(['start', serviceName]);
+      new CLI().argv(['start', serviceName, '-p', '8081']);
     })
     .then(() => {
-      globalExitCode.should.equal(0);
-
-      return fetch('http://localhost:8090/api/start-test-suite/', {
-        method: 'POST'
-      });
-    })
-    .then(response => {
-      return response.json();
-    })
-    .then(response => {
-      return fetch('http://localhost:8090/api/end-test-suite/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          testSuiteId: response.data.testSuiteId
-        })
-      });
-    })
-    .then(response => {
-      return response.json();
-    })
-    .then(response => {
-      (response.data.success).should.equal(true);
-
-      return new Promise(resolve => {
-        globalExitCode = -1;
-
-        process.exit = code => {
-          globalExitCode = code;
-          resolve();
-        };
-
-        new CLI().argv(['stop', serviceName]);
-      });
-    })
-    .then(() => {
-      globalExitCode.should.equal(0);
+      globalExitCode.should.equal(1);
     });
   });
 });

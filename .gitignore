@@ -3,3 +3,4 @@ npm-debug.log
 temp/
 .vscode/
 .node-persist/
+web-push-testing-service.log
