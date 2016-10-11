@@ -55,12 +55,12 @@ class WPTS {
 
   downloadBrowsers() {
     return Promise.all([
-      seleniumAssistant.downloadBrowser('firefox', 'stable', true),
-      seleniumAssistant.downloadBrowser('firefox', 'beta', true),
-      seleniumAssistant.downloadBrowser('firefox', 'unstable', true),
-      seleniumAssistant.downloadBrowser('chrome', 'stable', true),
-      seleniumAssistant.downloadBrowser('chrome', 'beta', true),
-      seleniumAssistant.downloadBrowser('chrome', 'unstable', true)
+      seleniumAssistant.downloadBrowser('firefox', 'stable', 48),
+      seleniumAssistant.downloadBrowser('firefox', 'beta', 48),
+      seleniumAssistant.downloadBrowser('firefox', 'unstable', 48),
+      seleniumAssistant.downloadBrowser('chrome', 'stable', 48),
+      seleniumAssistant.downloadBrowser('chrome', 'beta', 48),
+      seleniumAssistant.downloadBrowser('chrome', 'unstable', 48)
     ]);
   }
 
