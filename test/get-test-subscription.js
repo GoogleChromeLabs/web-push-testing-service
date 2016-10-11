@@ -141,15 +141,6 @@ describe('Test get-subscription API', function() {
         VAPID_KEYS.privateKey
       );
 
-      /** const webpushCLI = `web-push send-notification --endpoint=${subscription.endpoint} ` +
-        `--key=${subscription.keys.p256dh} --auth=${subscription.keys.auth} ` +
-        `--vapid-subject="mailto: web-push-testing-service@example.com" ` +
-        `--vapid-pubkey=${VAPID_KEYS.publicKey} --vapid-pvtkey=${VAPID_KEYS.privateKey}`;
-
-      console.log();
-      console.log(webpushCLI);
-      console.log();**/
-
       return webPush.sendNotification(subscription, expectedPayload)
       .catch(err => {
         throw err;
