@@ -23,8 +23,8 @@ require('chai').should();
 const VAPID_KEYS = webPush.generateVAPIDKeys();
 
 const GCM_DETAILS = {
-  senderId: '653317226796',
-  apiKey: 'AIzaSyBBh4ddPa96rQQNxqiq_qQj7sq1JdsNQUQ'
+  senderId: '914034011562',
+  apiKey: 'AIzaSyBSBJfbEP3Upq-fkuDVDep9YgNUGHymKxs'
 };
 
 describe('Test get-subscription API', function() {
