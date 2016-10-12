@@ -24,6 +24,7 @@ const del = require('del');
 const mkdirp = require('mkdirp');
 const seleniumFirefox = require('selenium-webdriver/firefox');
 
+const logHelper = require('./helper/log-helper.js');
 const APIServer = require('./server/api-server.js');
 const TestSuite = require('./model/test-suite.js');
 
@@ -51,6 +52,12 @@ class WPTS {
     this._apiServer.on('get-subscription', this.getSubscription.bind(this));
     this._apiServer.on('get-notification-status',
       this.getNotificationStatus.bind(this));
+
+    logHelper.setLogFile('./module.log');
+  }
+
+  setLogFile(logFile) {
+    logHelper.setLogFile(logFile);
   }
 
   downloadBrowsers() {
@@ -91,11 +98,13 @@ class WPTS {
   }
 
   startTestSuite(res) {
+    logHelper.info('Received start-test-suite call.');
     const newTestSuite = new TestSuite(this._availableTestSuiteId);
     this._availableTestSuiteId++;
     this._testSuites[newTestSuite.id] = newTestSuite;
-
+    logHelper.info('    Created new test suite. ' + this._availableTestSuiteId);
     APIServer.sendValidResponse(res, {testSuiteId: newTestSuite.id});
+    logHelper.info('    After request was sent');
   }
 
   endTestSuite(res, args) {

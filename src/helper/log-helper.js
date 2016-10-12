@@ -20,10 +20,15 @@ const winston = require('winston');
 
 class LogHelper {
   constructor() {
-    winston.add(winston.transports.File, {
-      filename: 'web-push-testing-service.log'
-    });
     winston.remove(winston.transports.Console);
+  }
+
+  setLogFile(file) {
+    winston.add(winston.transports.File, {
+      filename: file,
+      handleExceptions: true,
+      humanReadableUnhandledException: true
+    });
   }
 
   warn(msg) {

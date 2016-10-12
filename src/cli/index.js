@@ -30,6 +30,8 @@ class WPTSCLI {
     storage.initSync();
 
     this._debugMode = false;
+
+    logHelper.setLogFile('./cli.log');
   }
 
   argv(argv) {
@@ -113,11 +115,12 @@ class WPTSCLI {
       if (flags.p || flags.port) {
         options.port = flags.p || flags.port;
       }
-
-      let stdioArgs = ['ipc'];
-      if (this._debugMode) {
-        stdioArgs = ['ipc', process.stdout, process.stderr];
+      if (flags['log-file']) {
+        options.logFile = flags['log-file'];
       }
+
+      let stdioArgs = ['ipc', 'ignore', 'ignore'];
+
       // This is slightly hacky, but moves actual server to a bg process.
       const serviceProcess = spawn('node', [
         path.join(__dirname, 'detached-service.js'),
@@ -183,6 +186,7 @@ class WPTSCLI {
     console.log('Options:');
     console.log('    -h --help                     Show this screen.');
     console.log('    -p --port <Port Number>       Change port the service is run on.');
+    console.log('       --log-file <Path>          Path and filename for logfile.');
     console.log('       --version                  Current version of CLI.');
     console.log('');
     /* eslint-enable line-length */
