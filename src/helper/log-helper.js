@@ -24,11 +24,15 @@ class LogHelper {
   }
 
   setLogFile(file) {
-    winston.add(winston.transports.File, {
-      filename: file,
-      handleExceptions: true,
-      humanReadableUnhandledException: true
-    });
+    try {
+      winston.add(winston.transports.File, {
+        filename: file,
+        handleExceptions: true,
+        humanReadableUnhandledException: true
+      });
+    } catch (err) {
+      // NOOP
+    }
   }
 
   warn(msg) {

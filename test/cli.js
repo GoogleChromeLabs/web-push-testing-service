@@ -60,25 +60,24 @@ describe('Test Command Line Interface', function() {
       new CLI().argv(['stop', globalServiceName]);
       globalServiceName = null;
     }
+
+    endLogCapture();
   });
 
   it('should be able to require the cli from package.json', function() {
     const binValues = require('../package.json').bin;
     const cliPath = binValues['web-push-testing-service'];
-
     fs.accessSync(path.join(__dirname, '..', cliPath), fs.F_OK);
   });
 
   it('should show help text', function() {
     startLogCapture();
-
     const inputs = ['-h', '--help'];
     inputs.forEach(input => {
       new CLI().argv([input]);
     });
-    globalExitCode.should.equal(0);
 
-    endLogCapture();
+    globalExitCode.should.equal(0);
   });
 
   it('should show version number', function() {
@@ -90,10 +89,8 @@ describe('Test Command Line Interface', function() {
     });
     globalExitCode.should.equal(0);
 
-    endLogCapture();
-
     const version = require('../package.json').version;
-    globalLogs.length.should.equal(2);
+    globalLogs.length.should.equal(inputs.length);
     globalLogs.forEach(log => {
       log.should.equal(version);
     });

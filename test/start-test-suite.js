@@ -16,6 +16,7 @@
 'use strict';
 
 const fetch = require('node-fetch');
+const spawn = require('child_process').spawn;
 
 require('chai').should();
 
@@ -33,6 +34,36 @@ describe('Test start-test-suite API', function() {
   after(function() {
     return globalWPTS.endService();
   });
+
+  function performCurlRequest(url) {
+    return new Promise((resolve, reject) => {
+      let responseBody = '';
+      const curlProcess = spawn('curl', [
+        url,
+        '-X', 'POST'
+      ]);
+
+      curlProcess.stdout.on('data', data => {
+        responseBody += data;
+      });
+
+      // curlProcess.stderr.on('data', data => {
+      //   console.log(`stderr: ${data}`);
+      // });
+
+      curlProcess.on('error', err => {
+        reject(err);
+      });
+
+      curlProcess.on('close', code => {
+        if (code === 0) {
+          resolve(responseBody);
+        } else {
+          reject(`child process exited with code ${code}`);
+        }
+      });
+    });
+  }
 
   it('should get a unique testSuiteId for several requests', function() {
     const NUMBER_OF_ATTEMPTS = 5;
@@ -52,6 +83,37 @@ describe('Test start-test-suite API', function() {
         });
       });
     }
+    return promiseChain.then(() => {
+      testSuiteIds.sort();
+
+      for (let i = 0; i < testSuiteIds.length; i++) {
+        if (testSuiteIds[i] === testSuiteIds[i + 1]) {
+          throw new Error('Received matching testSuiteId: ' + testSuiteIds[i]);
+        }
+
+        // Make sure the testsuite exists
+        (globalWPTS._testSuites[testSuiteIds[i]]).should.be.defined;
+      }
+    });
+  });
+
+  it('should get a unique testSuiteId for a CURL request', function() {
+    const NUMBER_OF_ATTEMPTS = 5;
+    let promiseChain = Promise.resolve();
+
+    const testSuiteIds = [];
+    for (var i = 0; i < NUMBER_OF_ATTEMPTS; i++) {
+      promiseChain = promiseChain.then(() => {
+        return performCurlRequest(`http://localhost:8090/api/start-test-suite/`)
+        .then(response => {
+          return JSON.parse(response);
+        })
+        .then(response => {
+          testSuiteIds.push(response.data.testSuiteId);
+        });
+      });
+    }
+
     return promiseChain.then(() => {
       testSuiteIds.sort();
 
