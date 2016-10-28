@@ -104,7 +104,7 @@ class WPTS {
     this._testSuites[newTestSuite.id] = newTestSuite;
     logHelper.info('    Created new test suite. ' + this._availableTestSuiteId);
     APIServer.sendValidResponse(res, {testSuiteId: newTestSuite.id});
-    logHelper.info('    After request was sent');
+    logHelper.info('    Response was sent');
   }
 
   endTestSuite(res, args) {
@@ -168,8 +168,9 @@ class WPTS {
     if (webDriverInstance.getSeleniumBrowserId() === 'firefox' &&
       webDriverInstance.getVersionNumber() <= 48) {
       APIServer.sendErrorResponse(res, 'bad_browser_support',
-        `Unforuntately Firefox version 48 and below has poor selenium ` +
-        `support and isn't supported as a result.`);
+        `Unforuntately Firefox version 49 and below has poor selenium ` +
+        `support or doesn't allow notifications automatically and isn't ` +
+        `supported as a result.`);
       return;
     }
 
@@ -288,6 +289,8 @@ class WPTS {
       } else if (seleniumAssistantBrowser.getSeleniumBrowserId() ===
         'firefox') {
         const ffProfile = new seleniumFirefox.Profile();
+        ffProfile.setPreference('security.turn_off_all_security_so_that_' +
+          'viruses_can_take_over_this_computer', true);
         ffProfile.setPreference('dom.push.testing.ignorePermission', true);
         ffProfile.setPreference('notification.prompt.testing', true);
         ffProfile.setPreference('notification.prompt.testing.allow', true);
@@ -311,12 +314,35 @@ class WPTS {
 
       return driver.get(this._apiServer.getUrl() + '/' + urlGETArgs)
       .then(() => {
+        // This adds extra code to make notifications auto-grant perission
+        if (seleniumAssistantBrowser.getSeleniumBrowserId() === 'firefox') {
+          driver.setContext(seleniumFirefox.Context.CHROME);
+          return driver.executeScript(url => {
+            /* global Components, Services */
+            Components.utils.import('resource://gre/modules/Services.jsm');
+            const uri = Services.io.newURI(url, null, null);
+            const principal = Services.scriptSecurityManager
+              .getNoAppCodebasePrincipal(uri);
+            Services.perms.addFromPrincipal(
+              principal, 'desktop-notification', Services.perms.ALLOW_ACTION);
+          }, this._apiServer.getUrl())
+          .then(() => {
+            driver.setContext(seleniumFirefox.Context.CONTENT);
+          });
+        }
+      })
+      .then(() => {
         return driver.wait(() => {
           return driver.executeScript(() => {
             /* eslint-env browser */
             return window.PUSH_TESTING_SERVICE &&
               window.PUSH_TESTING_SERVICE.loaded;
           });
+        });
+      })
+      .then(() => {
+        return driver.executeScript(() => {
+          window.PUSH_TESTING_SERVICE.start();
         });
       })
       .then(() => {
@@ -337,7 +363,7 @@ class WPTS {
           const errorDetails = {
             code: 'unable_to_reg_service_worker',
             message: `There was an error when registering the service worker.` +
-            ` This is an issue with this service.`
+            ` "${swRegistered.error}".`
           };
           throw errorDetails;
         }
