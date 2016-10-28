@@ -111,71 +111,74 @@ if (getParamsArgs.gcmSenderId) {
   gcmElement = 'none';
 }
 
-if (navigator.serviceWorker) {
-  logMessage('Service worker supported');
-  window.PUSH_TESTING_SERVICE.receivedMessages = [];
+window.PUSH_TESTING_SERVICE.start = function() {
+  if (navigator.serviceWorker) {
+    logMessage('Service worker supported');
+    window.PUSH_TESTING_SERVICE.receivedMessages = [];
 
-  navigator.serviceWorker.addEventListener('message', function(event) {
-    window.PUSH_TESTING_SERVICE.receivedMessages.push(event.data);
-    const messageList = document.querySelector('.js-message-list');
-    while (messageList.firstChild) {
-      messageList.removeChild(messageList.firstChild);
-    }
-
-    window.PUSH_TESTING_SERVICE.receivedMessages.forEach(msg => {
-      const listItem = document.createElement('li');
-      listItem.textContent = msg;
-      messageList.appendChild(listItem);
-    });
-  });
-
-  // Service worker is supported
-  navigator.serviceWorker.register('/scripts/sw.js')
-  .then(registration => {
-    window.PUSH_TESTING_SERVICE.swRegistered = true;
-
-    logMessage('Service worker registered.');
-    return waitForActive(registration)
-    .then(registration => {
-      logMessage('Service worker is active.');
-      const subscribeOptions = {
-        userVisibleOnly: true
-      };
-      if (window.PUSH_TESTING_SERVICE.getArgs.vapidPublicKey) {
-        subscribeOptions.applicationServerKey =
-          urlBase64ToUint8Array(
-            window.PUSH_TESTING_SERVICE.getArgs.vapidPublicKey
-          );
-        logMessage(window.PUSH_TESTING_SERVICE.getArgs.vapidPublicKey);
-        logMessage(subscribeOptions.applicationServerKey);
+    navigator.serviceWorker.addEventListener('message', function(event) {
+      window.PUSH_TESTING_SERVICE.receivedMessages.push(event.data);
+      const messageList = document.querySelector('.js-message-list');
+      while (messageList.firstChild) {
+        messageList.removeChild(messageList.firstChild);
       }
 
-      return registration.pushManager.subscribe(subscribeOptions)
-      .then(subscription => {
-        logMessage('Registration is subscribed for push.');
-        window.PUSH_TESTING_SERVICE.subscription = JSON.parse(
-          JSON.stringify(subscription)
-        );
-        subscriptionElement.textContent = JSON.stringify(subscription);
-      })
-      .catch(err => {
-        window.PUSH_TESTING_SERVICE.subscription = {
-          error: err.message
-        };
-
-        logMessage('Push subscribe() failed: ' + err.message);
+      window.PUSH_TESTING_SERVICE.receivedMessages.forEach(msg => {
+        const listItem = document.createElement('li');
+        listItem.textContent = msg;
+        messageList.appendChild(listItem);
       });
     });
-  })
-  .catch(err => {
-    window.PUSH_TESTING_SERVICE.swRegistered = {
-      error: err.message
-    };
 
-    logMessage('Service worker register failed: ' + err.message);
-  });
-} else {
-  logMessage('Service worker not supported');
-}
+    // Service worker is supported
+    // NOTE: Had to include window.location.origin to make firefox happy :(
+    navigator.serviceWorker.register(window.location.origin + '/scripts/sw.js')
+    .then(registration => {
+      window.PUSH_TESTING_SERVICE.swRegistered = true;
+
+      logMessage('Service worker registered.');
+      return waitForActive(registration)
+      .then(registration => {
+        logMessage('Service worker is active.');
+        const subscribeOptions = {
+          userVisibleOnly: true
+        };
+        if (window.PUSH_TESTING_SERVICE.getArgs.vapidPublicKey) {
+          subscribeOptions.applicationServerKey =
+            urlBase64ToUint8Array(
+              window.PUSH_TESTING_SERVICE.getArgs.vapidPublicKey
+            );
+          logMessage(window.PUSH_TESTING_SERVICE.getArgs.vapidPublicKey);
+          logMessage(subscribeOptions.applicationServerKey);
+        }
+
+        return registration.pushManager.subscribe(subscribeOptions)
+        .then(subscription => {
+          logMessage('Registration is subscribed for push.');
+          window.PUSH_TESTING_SERVICE.subscription = JSON.parse(
+            JSON.stringify(subscription)
+          );
+          subscriptionElement.textContent = JSON.stringify(subscription);
+        })
+        .catch(err => {
+          window.PUSH_TESTING_SERVICE.subscription = {
+            error: err.message
+          };
+
+          logMessage('Push subscribe() failed: ' + err.message);
+        });
+      });
+    })
+    .catch(err => {
+      window.PUSH_TESTING_SERVICE.swRegistered = {
+        error: err.message
+      };
+
+      logMessage('Service worker register failed: ' + err.message);
+    });
+  } else {
+    logMessage('Service worker not supported');
+  }
+};
 
 window.PUSH_TESTING_SERVICE.loaded = true;

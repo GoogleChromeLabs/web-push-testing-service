@@ -440,6 +440,10 @@ describe('Test get-subscription API', function() {
       })
       .then(response => {
         if (response.error) {
+          if (response.error.id !== 'bad_browser_support') {
+            console.log(response.error);
+          }
+
           response.error.id.should.equal('bad_browser_support');
           return;
         }
@@ -475,6 +479,10 @@ describe('Test get-subscription API', function() {
       })
       .then(response => {
         if (response.error) {
+          if (response.error.id !== 'bad_browser_support') {
+            console.log(response.error);
+          }
+
           response.error.id.should.equal('bad_browser_support');
           return;
         }
