@@ -15,8 +15,7 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "node-persist": "^2.0.2",
-    "selenium-assistant": "^2.0.0",
-    "selenium-webdriver": "^3.0.0-beta-2",
+    "selenium-assistant": "^3.0.0",
     "web-push": "^3.1.0",
     "winston": "^2.2.0"
   },
@@ -37,5 +36,8 @@
     "publish-docs": "echo 'No Docs to Publish'",
     "publish-release": "publish-release.sh",
     "test": "npm run lint && mocha ./test/*.js"
+  },
+  "engines": {
+    "node": ">= 6.9.0"
   }
 }

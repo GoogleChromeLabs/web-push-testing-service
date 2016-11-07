@@ -13,7 +13,6 @@ os:
 osx_image: xcode7.3
 
 node_js:
-  - '4'
   - '6'
   - '7'
 
