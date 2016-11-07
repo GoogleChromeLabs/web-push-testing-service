@@ -36,5 +36,8 @@
     "publish-docs": "echo 'No Docs to Publish'",
     "publish-release": "publish-release.sh",
     "test": "npm run lint && mocha ./test/*.js"
-  }
+  },
+  "engines": {
+    "node": ">= 6.9.0"
+  },
 }
