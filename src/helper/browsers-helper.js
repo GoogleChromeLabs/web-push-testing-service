@@ -13,7 +13,9 @@ Promise.all([
 ])
 .then(x => {
   console.log(`Downloaded browsers ${x}`);
+  process.exit(0);
 })
 .catch(e => {
   console.error(`Error occured while downloading browsers ${e}`);
+  process.exit(1);
 });
