@@ -4,7 +4,7 @@ require('chromedriver');
 const seleniumAssistant = require('selenium-assistant');
 
 Promise.all([
-  seleniumAssistant.downloadBrowser('firefox', 'stable', 48),
+  seleniumAssistant.downloadBrowser('firefox', 'stable', 50),
   seleniumAssistant.downloadBrowser('chrome', 'stable', 48)
 ])
 .then(x => {
