@@ -32,7 +32,8 @@ class APIServer extends EventEmitter {
     }
 
     this._port = port;
-    this._host = '0.0.0.0';
+    this._host = 'localhost';
+    this._serveHost = '0.0.0.0';
 
     this._expressApp = express();
     this._expressApp.use(bodyParser.json());
@@ -77,7 +78,7 @@ class APIServer extends EventEmitter {
   startListening() {
     return new Promise((resolve, reject) => {
       this._expressServer = this._expressApp.listen(
-        this._port, this._host, () => {
+        this._port, this._serveHost, () => {
           resolve(this.getUrl());
         }
       );
