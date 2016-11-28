@@ -286,6 +286,7 @@ class WPTS {
 
         const options = seleniumAssistantBrowser.getSeleniumOptions();
         options.addArguments(`user-data-dir=${tempPreferenceFile}/`);
+        options.addArguments(`no-sandbox`);
       } else if (seleniumAssistantBrowser.getSeleniumBrowserId() ===
         'firefox') {
         const ffProfile = new seleniumFirefox.Profile();
