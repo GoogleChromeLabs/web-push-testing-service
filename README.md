@@ -82,7 +82,7 @@ and error with have an 'id' and 'message' parameter.
         }
     }
 
-1. Wait for notification to arrive
+2. Wait for notification to arrive
     Once your library has sent a message you can retrieve what details the
     browser received.
 
@@ -102,10 +102,18 @@ and error with have an 'id' and 'message' parameter.
         }
     }
 
-1. End the Test Suite
+3. End the Test Suite
     This will end and close any currently open tests.
 
     http://localhost:8090/api/end-test-suite/
 
     Input: {testSuiteId: <Your Test Suite ID>}
     Output: {data: {success: true}}
+
+### Specifying browsers
+
+Firefox and Chrome from three channels (`stable`, `beta`, `unstable`) are used by default. These values can be overridden by passing browsers and channels to the `start` call:
+
+```
+  web-push-testing-service start <Service Name> --browsers chrome,firefox --channels stable,beta
+```

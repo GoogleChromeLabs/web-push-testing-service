@@ -7,7 +7,8 @@ const WPTS = require('../index.js');
 // we want to be certain errors are surfaced
 try {
   const serviceValues = JSON.parse(process.argv[2]);
-  const webPushTestingService = new WPTS(serviceValues.port);
+  const webPushTestingService = new WPTS(serviceValues.port,
+    serviceValues.supportedBrowsers, serviceValues.supportedVersions);
   webPushTestingService.startService()
   .then(url => {
     const LINE = '---------------------------------' +

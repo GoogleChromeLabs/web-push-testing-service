@@ -119,6 +119,16 @@ class WPTSCLI {
         options.logFile = flags['log-file'];
       }
 
+      if (flags.browsers) {
+        options.supportedBrowsers =
+          flags.browsers.split(',').map(i => i.trim());
+      }
+
+      if (flags.channels) {
+        options.supportedVersions =
+          flags.channels.split(',').map(i => i.trim());
+      }
+
       let stdioArgs = ['ipc', 'ignore', 'ignore'];
 
       // This is slightly hacky, but moves actual server to a bg process.
@@ -187,6 +197,8 @@ class WPTSCLI {
     console.log('    -h --help                     Show this screen.');
     console.log('    -p --port <Port Number>       Change port the service is run on.');
     console.log('       --log-file <Path>          Path and filename for logfile.');
+    console.log('       --browsers <B1,B2>         Override list of browsers to use.');
+    console.log('       --channels <C1,C2>         Override list of channels to use.');
     console.log('       --version                  Current version of CLI.');
     console.log('');
     /* eslint-enable line-length */
