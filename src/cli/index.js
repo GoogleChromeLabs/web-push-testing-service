@@ -197,8 +197,8 @@ class WPTSCLI {
     console.log('    -h --help                     Show this screen.');
     console.log('    -p --port <Port Number>       Change port the service is run on.');
     console.log('       --log-file <Path>          Path and filename for logfile.');
-    console.log('       --browsers <B1,B2>         Override list of browsers to use.');
-    console.log('       --channels <C1,C2>         Override list of channels to use.');
+    console.log('       --browsers <Browser1, Browser2>         Override list of browsers to use.');
+    console.log('       --channels <ReleaseChannel1, ReleaseChannel2>         Override the browser versions tested on, can be "stable", "beta" and / or "unstable"');
     console.log('       --version                  Current version of CLI.');
     console.log('');
     /* eslint-enable line-length */

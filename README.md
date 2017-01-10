@@ -82,7 +82,7 @@ and error with have an 'id' and 'message' parameter.
         }
     }
 
-2. Wait for notification to arrive
+1. Wait for notification to arrive
     Once your library has sent a message you can retrieve what details the
     browser received.
 
@@ -102,7 +102,7 @@ and error with have an 'id' and 'message' parameter.
         }
     }
 
-3. End the Test Suite
+1. End the Test Suite
     This will end and close any currently open tests.
 
     http://localhost:8090/api/end-test-suite/
