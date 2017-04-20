@@ -49,7 +49,7 @@ class TestSuite {
   }
 
   end() {
-    const promises = Object.keys(this._runningTests).map(testId => {
+    const promises = Object.keys(this._runningTests).map((testId) => {
       return seleniumAssistant.killWebDriver(this._runningTests[testId]);
     });
     return Promise.all(promises);

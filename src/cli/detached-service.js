@@ -9,7 +9,7 @@ try {
   const serviceValues = JSON.parse(process.argv[2]);
   const webPushTestingService = new WPTS(serviceValues.port);
   webPushTestingService.startService()
-  .then(url => {
+  .then((url) => {
     const LINE = '---------------------------------' +
       '------------------------';
     logHelper.info(``);
@@ -23,7 +23,7 @@ try {
 
     process.send({serverStarted: true, pid: process.pid});
   })
-  .catch(err => {
+  .catch((err) => {
     process.send({serverStarted: false, errorMessage: err.message});
   });
 } catch (err) {

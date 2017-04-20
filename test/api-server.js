@@ -75,10 +75,10 @@ describe('API Server', function() {
     return globalServer.startListening()
     .then(() => {
       return fetch('http://localhost:8090/api/status-check', {
-        method: 'post'
+        method: 'post',
       });
     })
-    .then(response => {
+    .then((response) => {
       response.status.should.equal(200);
     });
   });
@@ -86,38 +86,38 @@ describe('API Server', function() {
   const apis = [
     {
       endpoint: '/api/start-test-suite/',
-      eventName: 'start-test-suite'
+      eventName: 'start-test-suite',
     },
     {
       endpoint: '/api/end-test-suite/',
-      eventName: 'end-test-suite'
+      eventName: 'end-test-suite',
     },
     {
       endpoint: '/api/get-subscription/',
-      eventName: 'get-subscription'
+      eventName: 'get-subscription',
     },
     {
       endpoint: '/api/get-notification-status/',
-      eventName: 'get-notification-status'
-    }
+      eventName: 'get-notification-status',
+    },
   ];
 
-  apis.forEach(apiInfo => {
+  apis.forEach((apiInfo) => {
     it(`should return error if '${apiInfo.endpoint}' is not handled`, function() {
       globalServer = new APIServer(8090);
 
       return globalServer.startListening()
       .then(() => {
         return fetch(`http://localhost:8090${apiInfo.endpoint}`, {
-          method: 'post'
+          method: 'post',
         });
       })
-      .then(response => {
+      .then((response) => {
         response.status.should.equal(400);
 
         return response.json();
       })
-      .then(response => {
+      .then((response) => {
         (typeof response.error).should.not.equal('undefined');
         response.error.id.should.equal('no_handlers');
         (typeof response.error.message).should.not.equal('undefined');
@@ -126,22 +126,22 @@ describe('API Server', function() {
 
     it(`should return valid response if '${apiInfo.endpoint}' is handled`, function() {
       globalServer = new APIServer(8090);
-      globalServer.on(apiInfo.eventName, res => {
+      globalServer.on(apiInfo.eventName, (res) => {
         APIServer.sendValidResponse(res, 'OK');
       });
 
       return globalServer.startListening()
       .then(() => {
         return fetch(`http://localhost:8090${apiInfo.endpoint}`, {
-          method: 'post'
+          method: 'post',
         });
       })
-      .then(response => {
+      .then((response) => {
         response.status.should.equal(200);
 
         return response.json();
       })
-      .then(response => {
+      .then((response) => {
         (typeof response.data).should.not.equal('undefined');
         response.data.should.equal('OK');
       });

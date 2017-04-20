@@ -31,7 +31,7 @@ describe('Test Command Line Interface', function() {
   let globalLogs = [];
 
   const startLogCapture = () => {
-    console.log = string => {
+    console.log = (string) => {
       globalLogs.push(string);
     };
   };
@@ -41,7 +41,7 @@ describe('Test Command Line Interface', function() {
   };
 
   before(function() {
-    process.exit = code => {
+    process.exit = (code) => {
       globalExitCode = code;
     };
   });
@@ -73,7 +73,7 @@ describe('Test Command Line Interface', function() {
   it('should show help text', function() {
     startLogCapture();
     const inputs = ['-h', '--help'];
-    inputs.forEach(input => {
+    inputs.forEach((input) => {
       new CLI().argv([input]);
     });
 
@@ -84,14 +84,14 @@ describe('Test Command Line Interface', function() {
     startLogCapture();
 
     const inputs = ['-v', '--version'];
-    inputs.forEach(input => {
+    inputs.forEach((input) => {
       new CLI().argv([input]);
     });
     globalExitCode.should.equal(0);
 
     const version = require('../package.json').version;
     globalLogs.length.should.equal(inputs.length);
-    globalLogs.forEach(log => {
+    globalLogs.forEach((log) => {
       log.should.equal(version);
     });
   });
@@ -101,8 +101,8 @@ describe('Test Command Line Interface', function() {
       this.timeout(10 * 60 * 1000);
       globalServiceName = 'unit-test-' + Date.now();
 
-      return new Promise(resolve => {
-        process.exit = code => {
+      return new Promise((resolve) => {
+        process.exit = (code) => {
           globalExitCode = code;
           resolve();
         };
@@ -118,33 +118,33 @@ describe('Test Command Line Interface', function() {
         globalExitCode.should.equal(0);
 
         return fetch('http://localhost:8090/api/start-test-suite/', {
-          method: 'POST'
+          method: 'POST',
         });
       })
-      .then(response => {
+      .then((response) => {
         return response.json();
       })
-      .then(response => {
+      .then((response) => {
         return fetch('http://localhost:8090/api/end-test-suite/', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            testSuiteId: response.data.testSuiteId
-          })
+            testSuiteId: response.data.testSuiteId,
+          }),
         });
       })
-      .then(response => {
+      .then((response) => {
         return response.json();
       })
-      .then(response => {
+      .then((response) => {
         (response.data.success).should.equal(true);
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           globalExitCode = -1;
 
-          process.exit = code => {
+          process.exit = (code) => {
             globalExitCode = code;
             resolve();
           };
@@ -168,8 +168,8 @@ describe('Test Command Line Interface', function() {
     this.timeout(10 * 60 * 1000);
     globalServiceName = 'unit-test-' + Date.now();
 
-    return new Promise(resolve => {
-      process.exit = code => {
+    return new Promise((resolve) => {
+      process.exit = (code) => {
         globalExitCode = code;
         resolve();
       };
@@ -180,10 +180,10 @@ describe('Test Command Line Interface', function() {
       globalExitCode.should.equal(0);
     })
     .then(() => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         globalExitCode = -1;
 
-        process.exit = code => {
+        process.exit = (code) => {
           globalExitCode = code;
           resolve();
         };
@@ -195,10 +195,10 @@ describe('Test Command Line Interface', function() {
       globalExitCode.should.equal(1);
     })
     .then(() => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         globalExitCode = -1;
 
-        process.exit = code => {
+        process.exit = (code) => {
           globalExitCode = code;
           resolve();
         };

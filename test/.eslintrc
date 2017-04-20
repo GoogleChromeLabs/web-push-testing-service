@@ -5,6 +5,8 @@
   "rules": {
       "no-unused-expressions": 0,
       "max-len": 0,
-      "max-nested-callbacks": 0
+      "max-nested-callbacks": 0,
+      "no-console": 0,
+      "no-invalid-this": 0
   }
 }

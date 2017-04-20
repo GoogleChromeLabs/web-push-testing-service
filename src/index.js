@@ -38,12 +38,12 @@ class WPTS {
     this._testSuites = {};
     this._supportedBrowsers = [
       'chrome',
-      'firefox'
+      'firefox',
     ];
     this._supportedBrowserVersions = [
       'stable',
       'beta',
-      'unstable'
+      'unstable',
     ];
 
     this._apiServer = new APIServer(port);
@@ -62,12 +62,12 @@ class WPTS {
 
   downloadBrowsers() {
     return Promise.all([
-      seleniumAssistant.downloadBrowser('firefox', 'stable', 48),
-      seleniumAssistant.downloadBrowser('firefox', 'beta', 48),
-      seleniumAssistant.downloadBrowser('firefox', 'unstable', 48),
-      seleniumAssistant.downloadBrowser('chrome', 'stable', 48),
-      seleniumAssistant.downloadBrowser('chrome', 'beta', 48),
-      seleniumAssistant.downloadBrowser('chrome', 'unstable', 48)
+      seleniumAssistant.downloadLocalBrowser('firefox', 'stable', 48),
+      seleniumAssistant.downloadLocalBrowser('firefox', 'beta', 48),
+      seleniumAssistant.downloadLocalBrowser('firefox', 'unstable', 48),
+      seleniumAssistant.downloadLocalBrowser('chrome', 'stable', 48),
+      seleniumAssistant.downloadLocalBrowser('chrome', 'beta', 48),
+      seleniumAssistant.downloadLocalBrowser('chrome', 'unstable', 48),
     ]);
   }
 
@@ -80,7 +80,7 @@ class WPTS {
 
   endService() {
     const testSuiteIds = Object.keys(this._testSuites);
-    const promises = testSuiteIds.map(testSuiteId => {
+    const promises = testSuiteIds.map((testSuiteId) => {
       const testSuite = this._testSuites[testSuiteId];
       return testSuite.end()
       .then(() => {
@@ -122,7 +122,7 @@ class WPTS {
       delete this._testSuites[args.testSuiteId];
       APIServer.sendValidResponse(res);
     })
-    .catch(err => {
+    .catch((err) => {
       APIServer.sendErrorResponse(res, 'webdriver_issue', 'An issue ' +
         'occured while attempting to get the subscription: ' + err.message);
     });
@@ -157,7 +157,7 @@ class WPTS {
     }
 
     const webDriverInstance =
-      seleniumAssistant.getBrowser(args.browserName, args.browserVersion);
+      seleniumAssistant.getLocalBrowser(args.browserName, args.browserVersion);
     if (!webDriverInstance) {
       APIServer.sendErrorResponse(res, 'browser_not_found',
         `Unable to find the requested browser. This is likely an issue` +
@@ -165,7 +165,7 @@ class WPTS {
       return;
     }
 
-    if (webDriverInstance.getSeleniumBrowserId() === 'firefox' &&
+    if (webDriverInstance.getId() === 'firefox' &&
       webDriverInstance.getVersionNumber() <= 48) {
       APIServer.sendErrorResponse(res, 'bad_browser_support',
         `Unforuntately Firefox version 49 and below has poor selenium ` +
@@ -197,10 +197,10 @@ class WPTS {
 
     return this.initiateTestInstance(args.testSuiteId, optionalArgs,
       webDriverInstance)
-    .then(testDetails => {
+    .then((testDetails) => {
       APIServer.sendValidResponse(res, testDetails);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.code && err.message) {
         APIServer.sendErrorResponse(res, err.code, 'An issue ' +
           'occured while attempting to get the subscription: ' + err.message);
@@ -230,12 +230,12 @@ class WPTS {
       return testInstance.executeScript(() => {
         return window.PUSH_TESTING_SERVICE.receivedMessages.length > 0;
       })
-      .then(isValid => {
+      .then((isValid) => {
         if (isValid) {
           return true;
         }
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           setTimeout(() => resolve(false), 500);
         });
       });
@@ -247,10 +247,10 @@ class WPTS {
         return messages;
       });
     })
-    .then(receivedMessages => {
+    .then((receivedMessages) => {
       APIServer.sendValidResponse(res, {messages: receivedMessages});
     })
-    .catch(err => {
+    .catch((err) => {
       APIServer.sendErrorResponse(res, 'web_driver_error', 'An error ' +
         'occured while attempting to check the notification status. ' +
         err.message);
@@ -261,21 +261,21 @@ class WPTS {
     const tempPreferenceFile = './temp/blink';
     return del('./temp')
     .then(() => {
-      if (seleniumAssistantBrowser.getSeleniumBrowserId() === 'chrome' ||
-        seleniumAssistantBrowser.getSeleniumBrowserId() === 'opera') {
+      if (seleniumAssistantBrowser.getId() === 'chrome' ||
+        seleniumAssistantBrowser.getId() === 'opera') {
         /* eslint-disable camelcase */
         const blinkPreferences = {
           profile: {
             content_settings: {
               exceptions: {
-                notifications: {}
-              }
-            }
-          }
+                notifications: {},
+              },
+            },
+          },
         };
         blinkPreferences.profile.content_settings.exceptions
           .notifications[this._apiServer.getUrl() + ',*'] = {
-            setting: 1
+            setting: 1,
           };
 
         // Write to file
@@ -286,7 +286,7 @@ class WPTS {
 
         const options = seleniumAssistantBrowser.getSeleniumOptions();
         options.addArguments(`user-data-dir=${tempPreferenceFile}/`);
-      } else if (seleniumAssistantBrowser.getSeleniumBrowserId() ===
+      } else if (seleniumAssistantBrowser.getId() ===
         'firefox') {
         const ffProfile = new seleniumFirefox.Profile();
         ffProfile.setPreference('security.turn_off_all_security_so_that_' +
@@ -299,14 +299,14 @@ class WPTS {
 
       return seleniumAssistantBrowser.getSeleniumDriver();
     })
-    .then(driver => {
+    .then((driver) => {
       const testSuite = this._testSuites[testSuiteId];
       const testInstanceId = testSuite.addTestInstance(driver);
 
       let urlGETArgs = '';
       const optionalArgKeys = Object.keys(optionalArgs);
       if (optionalArgKeys.length > 0) {
-        const urlArgs = optionalArgKeys.map(argKey => {
+        const urlArgs = optionalArgKeys.map((argKey) => {
           return `${argKey}=${optionalArgs[argKey]}`;
         });
         urlGETArgs = '?' + urlArgs.join('&');
@@ -315,9 +315,9 @@ class WPTS {
       return driver.get(this._apiServer.getUrl() + '/' + urlGETArgs)
       .then(() => {
         // This adds extra code to make notifications auto-grant perission
-        if (seleniumAssistantBrowser.getSeleniumBrowserId() === 'firefox') {
+        if (seleniumAssistantBrowser.getId() === 'firefox') {
           driver.setContext(seleniumFirefox.Context.CHROME);
-          return driver.executeScript(url => {
+          return driver.executeScript((url) => {
             /* global Components, Services */
             Components.utils.import('resource://gre/modules/Services.jsm');
             const uri = Services.io.newURI(url, null, null);
@@ -358,12 +358,12 @@ class WPTS {
           return window.PUSH_TESTING_SERVICE.swRegistered;
         });
       })
-      .then(swRegistered => {
+      .then((swRegistered) => {
         if (swRegistered.error) {
           const errorDetails = {
             code: 'unable_to_reg_service_worker',
             message: `There was an error when registering the service worker.` +
-            ` "${swRegistered.error}".`
+            ` "${swRegistered.error}".`,
           };
           throw errorDetails;
         }
@@ -383,18 +383,18 @@ class WPTS {
           return window.PUSH_TESTING_SERVICE.subscription;
         });
       })
-      .then(subscription => {
+      .then((subscription) => {
         if (subscription.error) {
           const errorDetails = {
             code: 'unable_to_get_subscription',
-            message: subscription.error
+            message: subscription.error,
           };
           throw errorDetails;
         }
 
         return {
           testId: testInstanceId,
-          subscription: subscription
+          subscription: subscription,
         };
       });
     });
@@ -403,7 +403,7 @@ class WPTS {
   missingRequiredArgs(res, args, requiredFields) {
     // Clone the required fields array
     const requiredFieldsClone = requiredFields.slice(0);
-    Object.keys(args).forEach(key => {
+    Object.keys(args).forEach((key) => {
       const fieldIndex = requiredFieldsClone.indexOf(key);
       if (fieldIndex >= 0) {
         if (typeof args[key] !== 'undefined' && args[key] !== null) {
