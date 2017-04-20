@@ -53,7 +53,9 @@ class WPTSCLI {
     }
 
     if (args.v || args.version) {
+      /* eslint-disable no-console */
       console.log(require('../../package.json').version);
+      /* eslint-enable no-console */
       handled = true;
     }
 
@@ -124,10 +126,10 @@ class WPTSCLI {
       // This is slightly hacky, but moves actual server to a bg process.
       const serviceProcess = spawn('node', [
         path.join(__dirname, 'detached-service.js'),
-        JSON.stringify(options)
+        JSON.stringify(options),
       ], {
         detached: true,
-        stdio: stdioArgs
+        stdio: stdioArgs,
       });
 
       serviceProcess.on('message', function(message) {
@@ -172,7 +174,7 @@ class WPTSCLI {
   }
 
   printHelpText() {
-    /* eslint-disable max-len */
+    /* eslint-disable max-len, no-console */
     console.log('web-push-testing-service');
     console.log('');
     console.log('Usage:');

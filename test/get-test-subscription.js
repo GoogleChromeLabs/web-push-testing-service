@@ -24,10 +24,12 @@ const VAPID_KEYS = webPush.generateVAPIDKeys();
 
 const GCM_DETAILS = {
   senderId: '914034011562',
-  apiKey: 'AIzaSyBSBJfbEP3Upq-fkuDVDep9YgNUGHymKxs'
+  apiKey: 'AIzaSyBSBJfbEP3Upq-fkuDVDep9YgNUGHymKxs',
 };
 
 describe('Test get-subscription API', function() {
+  this.retries(2);
+
   const WPTS = require('../src/index.js');
 
   const globalWPTS = new WPTS(8090);
@@ -35,28 +37,28 @@ describe('Test get-subscription API', function() {
   const browserVariants = [
     {
       browser: 'chrome',
-      version: 'stable'
+      version: 'stable',
     },
     {
       browser: 'chrome',
-      version: 'beta'
+      version: 'beta',
     },
     {
       browser: 'chrome',
-      version: 'unstable'
+      version: 'unstable',
     },
     {
       browser: 'firefox',
-      version: 'stable'
+      version: 'stable',
     },
     {
       browser: 'firefox',
-      version: 'beta'
+      version: 'beta',
     },
     {
       browser: 'firefox',
-      version: 'unstable'
-    }
+      version: 'unstable',
+    },
   ];
 
   let globalTestSuiteId;
@@ -73,12 +75,12 @@ describe('Test get-subscription API', function() {
   beforeEach(function() {
     // Create new test suite
     return fetch(`http://localhost:8090/api/start-test-suite/`, {
-      method: 'post'
+      method: 'post',
     })
-    .then(response => {
+    .then((response) => {
       return response.json();
     })
-    .then(response => {
+    .then((response) => {
       if (response.error) {
         throw new Error('No testSuiteId returned');
       }
@@ -93,23 +95,23 @@ describe('Test get-subscription API', function() {
     return fetch(`http://localhost:8090/api/end-test-suite/`, {
       method: 'post',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        testSuiteId: globalTestSuiteId
-      })
+        testSuiteId: globalTestSuiteId,
+      }),
     })
-    .then(response => {
+    .then((response) => {
       return response.json();
     })
-    .then(response => {
+    .then((response) => {
       if (response.error) {
         throw new Error('Unable to end test suite.');
       }
     });
   });
 
-  const validateSubscriptionResponse = response => {
+  const validateSubscriptionResponse = (response) => {
     if (!response.data) {
       throw new Error('Expected response.data to be defined, instead ' +
         'received: ' + JSON.stringify(response));
@@ -130,10 +132,11 @@ describe('Test get-subscription API', function() {
   const sendPushMessage = (suiteId, testId, subscription) => {
     const expectedPayload = 'hello';
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(resolve, 4000);
     })
     .then(() => {
+      console.log(VAPID_KEYS);
       webPush.setGCMAPIKey(GCM_DETAILS.apiKey);
       webPush.setVapidDetails(
         'mailto: web-push-testing-service@example.com',
@@ -142,12 +145,12 @@ describe('Test get-subscription API', function() {
       );
 
       return webPush.sendNotification(subscription, expectedPayload)
-      .catch(err => {
+      .catch((err) => {
         throw err;
       });
     })
     .then(() => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         setTimeout(resolve, 3000);
       });
     })
@@ -155,18 +158,18 @@ describe('Test get-subscription API', function() {
       return fetch(`http://localhost:8090/api/get-notification-status/`, {
         method: 'post',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           testSuiteId: globalTestSuiteId,
-          testId: testId
-        })
+          testId: testId,
+        }),
       });
     })
-    .then(response => {
+    .then((response) => {
       return response.json();
     })
-    .then(response => {
+    .then((response) => {
       if (response.error) {
         throw new Error('Bad response: ' + response.error.message);
       }
@@ -178,13 +181,13 @@ describe('Test get-subscription API', function() {
 
   it('should error when given no input', function() {
     return fetch(`http://localhost:8090/api/get-subscription/`, {
-      method: 'post'
+      method: 'post',
     })
-    .then(response => {
+    .then((response) => {
       response.status.should.equal(400);
       return response.json();
     })
-    .then(response => {
+    .then((response) => {
       (typeof response.error).should.not.equal('undefined');
       response.error.id.should.equal('missing_required_args');
       (typeof response.error.message).should.not.equal('undefined');
@@ -195,47 +198,47 @@ describe('Test get-subscription API', function() {
     const badInputs = [
       {
         browserName: 'chrome',
-        browserVersion: 'stable'
+        browserVersion: 'stable',
       },
       {
         testSuiteId: '',
         browserName: 'chrome',
-        browserVersion: 'stable'
+        browserVersion: 'stable',
       },
       {
         testSuiteId: {},
         browserName: 'chrome',
-        browserVersion: 'stable'
+        browserVersion: 'stable',
       },
       {
         testSuiteId: [],
         browserName: 'chrome',
-        browserVersion: 'stable'
+        browserVersion: 'stable',
       },
       {
         testSuiteId: 99999999,
         browserName: 'chrome',
-        browserVersion: 'stable'
+        browserVersion: 'stable',
       },
       {
         testSuiteId: -1,
         browserName: 'chrome',
-        browserVersion: 'stable'
-      }
+        browserVersion: 'stable',
+      },
     ];
 
-    const promises = badInputs.map(badValue => {
+    const promises = badInputs.map((badValue) => {
       return fetch(`http://localhost:8090/api/get-subscription/`, {
         method: 'post',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(badValue)
+        body: JSON.stringify(badValue),
       });
     });
 
     return Promise.all(promises)
-    .then(responses => {
+    .then((responses) => {
       const promises = responses.map((response, index) => {
         response.status.should.equal(400);
         return response.json();
@@ -243,8 +246,8 @@ describe('Test get-subscription API', function() {
 
       return Promise.all(promises);
     })
-    .then(responses => {
-      responses.forEach(response => {
+    .then((responses) => {
+      responses.forEach((response) => {
         (typeof response.error).should.not.equal('undefined');
         (typeof response.error.id).should.not.equal('undefined');
         (typeof response.error.message).should.not.equal('undefined');
@@ -256,47 +259,47 @@ describe('Test get-subscription API', function() {
     const badInputs = [
       {
         testSuiteId: globalTestSuiteId,
-        browserVersion: 'stable'
+        browserVersion: 'stable',
       },
       {
         testSuiteId: globalTestSuiteId,
         browserName: '',
-        browserVersion: 'stable'
+        browserVersion: 'stable',
       },
       {
         testSuiteId: globalTestSuiteId,
         browserName: {},
-        browserVersion: 'stable'
+        browserVersion: 'stable',
       },
       {
         testSuiteId: globalTestSuiteId,
         browserName: [],
-        browserVersion: 'stable'
+        browserVersion: 'stable',
       },
       {
         testSuiteId: globalTestSuiteId,
         browserName: 99999999,
-        browserVersion: 'stable'
+        browserVersion: 'stable',
       },
       {
         testSuiteId: globalTestSuiteId,
         browserName: 'made-up',
-        browserVersion: 'stable'
-      }
+        browserVersion: 'stable',
+      },
     ];
 
-    const promises = badInputs.map(badValue => {
+    const promises = badInputs.map((badValue) => {
       return fetch(`http://localhost:8090/api/get-subscription/`, {
         method: 'post',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(badValue)
+        body: JSON.stringify(badValue),
       });
     });
 
     return Promise.all(promises)
-    .then(responses => {
+    .then((responses) => {
       const promises = responses.map((response, index) => {
         response.status.should.equal(400);
         return response.json();
@@ -304,8 +307,8 @@ describe('Test get-subscription API', function() {
 
       return Promise.all(promises);
     })
-    .then(responses => {
-      responses.forEach(response => {
+    .then((responses) => {
+      responses.forEach((response) => {
         (typeof response.error).should.not.equal('undefined');
         (typeof response.error.id).should.not.equal('undefined');
         (typeof response.error.message).should.not.equal('undefined');
@@ -317,47 +320,47 @@ describe('Test get-subscription API', function() {
     const badInputs = [
       {
         testSuiteId: globalTestSuiteId,
-        browserName: 'chrome'
+        browserName: 'chrome',
       },
       {
         testSuiteId: globalTestSuiteId,
         browserName: 'chrome',
-        browserVersion: ''
+        browserVersion: '',
       },
       {
         testSuiteId: globalTestSuiteId,
         browserName: 'chrome',
-        browserVersion: {}
+        browserVersion: {},
       },
       {
         testSuiteId: globalTestSuiteId,
         browserName: 'chrome',
-        browserVersion: []
+        browserVersion: [],
       },
       {
         testSuiteId: globalTestSuiteId,
         browserName: 'chrome',
-        browserVersion: 99999999
+        browserVersion: 99999999,
       },
       {
         testSuiteId: globalTestSuiteId,
         browserName: 'chrome',
-        browserVersion: 'made-up'
-      }
+        browserVersion: 'made-up',
+      },
     ];
 
-    const promises = badInputs.map(badValue => {
+    const promises = badInputs.map((badValue) => {
       return fetch(`http://localhost:8090/api/get-subscription/`, {
         method: 'post',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(badValue)
+        body: JSON.stringify(badValue),
       });
     });
 
     return Promise.all(promises)
-    .then(responses => {
+    .then((responses) => {
       const promises = responses.map((response, index) => {
         response.status.should.equal(400);
         return response.json();
@@ -365,8 +368,8 @@ describe('Test get-subscription API', function() {
 
       return Promise.all(promises);
     })
-    .then(responses => {
-      responses.forEach(response => {
+    .then((responses) => {
+      responses.forEach((response) => {
         (typeof response.error).should.not.equal('undefined');
         (typeof response.error.id).should.not.equal('undefined');
         (typeof response.error.message).should.not.equal('undefined');
@@ -374,7 +377,7 @@ describe('Test get-subscription API', function() {
     });
   });
 
-  browserVariants.forEach(browserVariant => {
+  browserVariants.forEach((browserVariant) => {
     it(`should be able to get a subscription from ${browserVariant.browser} - ${browserVariant.version} with no additional info`, function() {
       // This requires starting / stopping selenium tests
       if (process.env.TRAVIS) {
@@ -385,18 +388,18 @@ describe('Test get-subscription API', function() {
       return fetch(`http://localhost:8090/api/get-subscription/`, {
         method: 'post',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           testSuiteId: globalTestSuiteId,
           browserName: browserVariant.browser,
-          browserVersion: browserVariant.version
-        })
+          browserVersion: browserVariant.version,
+        }),
       })
-      .then(response => {
+      .then((response) => {
         return response.json();
       })
-      .then(response => {
+      .then((response) => {
         if (response.error) {
           switch (response.error.id) {
             case 'bad_browser_support':
@@ -426,19 +429,19 @@ describe('Test get-subscription API', function() {
       return fetch(`http://localhost:8090/api/get-subscription/`, {
         method: 'post',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           testSuiteId: globalTestSuiteId,
           browserName: browserVariant.browser,
           browserVersion: browserVariant.version,
-          vapidPublicKey: VAPID_KEYS.publicKey
-        })
+          vapidPublicKey: VAPID_KEYS.publicKey,
+        }),
       })
-      .then(response => {
+      .then((response) => {
         return response.json();
       })
-      .then(response => {
+      .then((response) => {
         if (response.error) {
           if (response.error.id !== 'bad_browser_support') {
             console.log(response.error);
@@ -465,19 +468,19 @@ describe('Test get-subscription API', function() {
       return fetch(`http://localhost:8090/api/get-subscription/`, {
         method: 'post',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           testSuiteId: globalTestSuiteId,
           browserName: browserVariant.browser,
           browserVersion: browserVariant.version,
-          gcmSenderId: GCM_DETAILS.senderId
-        })
+          gcmSenderId: GCM_DETAILS.senderId,
+        }),
       })
-      .then(response => {
+      .then((response) => {
         return response.json();
       })
-      .then(response => {
+      .then((response) => {
         if (response.error) {
           if (response.error.id !== 'bad_browser_support') {
             console.log(response.error);
@@ -504,20 +507,20 @@ describe('Test get-subscription API', function() {
       return fetch(`http://localhost:8090/api/get-subscription/`, {
         method: 'post',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           testSuiteId: globalTestSuiteId,
           browserName: browserVariant.browser,
           browserVersion: browserVariant.version,
           vapidPublicKey: VAPID_KEYS.publicKey,
-          gcmSenderId: GCM_DETAILS.senderId
-        })
+          gcmSenderId: GCM_DETAILS.senderId,
+        }),
       })
-      .then(response => {
+      .then((response) => {
         return response.json();
       })
-      .then(response => {
+      .then((response) => {
         if (response.error) {
           response.error.id.should.equal('bad_browser_support');
           return;

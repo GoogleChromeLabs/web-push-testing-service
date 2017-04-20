@@ -38,16 +38,16 @@ describe('Test end-test-suite API', function() {
     const NUMBER_OF_ATTEMPTS = 5;
     let promiseChain = Promise.resolve();
     const testSuiteIds = [];
-    for (var i = 0; i < NUMBER_OF_ATTEMPTS; i++) {
+    for (let i = 0; i < NUMBER_OF_ATTEMPTS; i++) {
       promiseChain = promiseChain.then(() => {
         return fetch(`http://localhost:8090/api/start-test-suite/`, {
-          method: 'post'
+          method: 'post',
         })
-        .then(response => {
+        .then((response) => {
           response.status.should.equal(200);
           return response.json();
         })
-        .then(response => {
+        .then((response) => {
           testSuiteIds.push(response.data.testSuiteId);
         });
       });
@@ -61,17 +61,17 @@ describe('Test end-test-suite API', function() {
           return fetch(`http://localhost:8090/api/end-test-suite/`, {
             method: 'post',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              testSuiteId: testSuiteIds[i]
-            })
+              testSuiteId: testSuiteIds[i],
+            }),
           })
-          .then(response => {
+          .then((response) => {
             response.status.should.equal(200);
             return response.json();
           })
-          .then(response => {
+          .then((response) => {
             (response.data.success).should.equal(true);
           });
         });
@@ -90,29 +90,29 @@ describe('Test end-test-suite API', function() {
       {testSuiteId: '1234'},
       {testSuiteId: {}},
       {testSuiteId: []},
-      {TeStSuItEiD: 1}
+      {TeStSuItEiD: 1},
     ];
 
-    const promises = badValues.map(badValue => {
+    const promises = badValues.map((badValue) => {
       return fetch('http://localhost:8090/api/end-test-suite/', {
         method: 'post',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(badValue)
+        body: JSON.stringify(badValue),
       });
     });
     return Promise.all(promises)
-    .then(responses => {
-      const promises = responses.map(response => {
+    .then((responses) => {
+      const promises = responses.map((response) => {
         response.status.should.equal(400);
         return response.json();
       });
 
       return Promise.all(promises);
     })
-    .then(responses => {
-      responses.forEach(response => {
+    .then((responses) => {
+      responses.forEach((response) => {
         (typeof response.error).should.not.equal('undefined');
         (typeof response.error.id).should.not.equal('undefined');
         (typeof response.error.message).should.not.equal('undefined');
@@ -122,13 +122,13 @@ describe('Test end-test-suite API', function() {
 
   it('should return error for empty body field', function() {
     return fetch('http://localhost:8090/api/end-test-suite/', {
-      method: 'post'
+      method: 'post',
     })
-    .then(response => {
+    .then((response) => {
       response.status.should.equal(400);
       return response.json();
     })
-    .then(response => {
+    .then((response) => {
       (typeof response.error).should.not.equal('undefined');
       (response.error.id).should.equal('missing_required_args');
       (typeof response.error.message).should.not.equal('undefined');
@@ -139,17 +139,17 @@ describe('Test end-test-suite API', function() {
     return fetch('http://localhost:8090/api/end-test-suite/', {
       method: 'post',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        testSuiteId: 0
-      })
+        testSuiteId: 0,
+      }),
     })
-    .then(response => {
+    .then((response) => {
       response.status.should.equal(400);
       return response.json();
     })
-    .then(response => {
+    .then((response) => {
       (typeof response.error).should.not.equal('undefined');
       (response.error.id).should.equal('invalid_test_suite_id');
       (typeof response.error.message).should.not.equal('undefined');

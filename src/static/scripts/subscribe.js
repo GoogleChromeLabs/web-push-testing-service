@@ -16,9 +16,9 @@
 window.PUSH_TESTING_SERVICE = {};
 
 function logMessage(text) {
-  var logElement = document.querySelector('.js-log');
+  let logElement = document.querySelector('.js-log');
 
-  var pElement = document.createElement('p');
+  let pElement = document.createElement('p');
   pElement.textContent = text;
 
   logElement.appendChild(pElement);
@@ -69,17 +69,17 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
-var vapidElement = document.querySelector('.js-vapid-element');
-var gcmElement = document.querySelector('.js-gcm-element');
-var subscriptionElement = document.querySelector('.js-subscription-element');
+let vapidElement = document.querySelector('.js-vapid-element');
+let gcmElement = document.querySelector('.js-gcm-element');
+let subscriptionElement = document.querySelector('.js-subscription-element');
 
-var getParamsString = window.location.search.replace('?', '');
-var getParamsArgs = {};
+let getParamsString = window.location.search.replace('?', '');
+let getParamsArgs = {};
 if (getParamsString.length > 0) {
   const variables = getParamsString.split('&');
   if (variables.length !== 0) {
-    variables.forEach(argString => {
-      var argDetails = argString.split('=');
+    variables.forEach((argString) => {
+      let argDetails = argString.split('=');
       if (argDetails.length !== 2) {
         throw new Error('Invalid GET variables parsed in: ',
           window.location.search);
@@ -104,8 +104,8 @@ if (getParamsArgs.vapidPublicKey) {
 if (getParamsArgs.gcmSenderId) {
   gcmElement.textContent = getParamsArgs.gcmSenderId;
 
-  var linkElement = document.createElement('link');
-  linkElement.rel = "manifest";
+  let linkElement = document.createElement('link');
+  linkElement.rel = 'manifest';
   linkElement.href = '/manifest/' + getParamsArgs.gcmSenderId + '/';
 
   document.head.appendChild(linkElement);
@@ -125,7 +125,7 @@ window.PUSH_TESTING_SERVICE.start = function() {
         messageList.removeChild(messageList.firstChild);
       }
 
-      window.PUSH_TESTING_SERVICE.receivedMessages.forEach(msg => {
+      window.PUSH_TESTING_SERVICE.receivedMessages.forEach((msg) => {
         const listItem = document.createElement('li');
         listItem.textContent = msg;
         messageList.appendChild(listItem);
@@ -135,15 +135,15 @@ window.PUSH_TESTING_SERVICE.start = function() {
     // Service worker is supported
     // NOTE: Had to include window.location.origin to make firefox happy :(
     navigator.serviceWorker.register(window.location.origin + '/scripts/sw.js')
-    .then(registration => {
+    .then((registration) => {
       window.PUSH_TESTING_SERVICE.swRegistered = true;
 
       logMessage('Service worker registered.');
       return waitForActive(registration)
-      .then(registration => {
+      .then((registration) => {
         logMessage('Service worker is active.');
         const subscribeOptions = {
-          userVisibleOnly: true
+          userVisibleOnly: true,
         };
         if (window.PUSH_TESTING_SERVICE.getArgs.vapidPublicKey) {
           subscribeOptions.applicationServerKey =
@@ -155,25 +155,25 @@ window.PUSH_TESTING_SERVICE.start = function() {
         }
 
         return registration.pushManager.subscribe(subscribeOptions)
-        .then(subscription => {
+        .then((subscription) => {
           logMessage('Registration is subscribed for push.');
           window.PUSH_TESTING_SERVICE.subscription = JSON.parse(
             JSON.stringify(subscription)
           );
           subscriptionElement.textContent = JSON.stringify(subscription);
         })
-        .catch(err => {
+        .catch((err) => {
           window.PUSH_TESTING_SERVICE.subscription = {
-            error: err.message
+            error: err.message,
           };
 
           logMessage('Push subscribe() failed: ' + err.message);
         });
       });
     })
-    .catch(err => {
+    .catch((err) => {
       window.PUSH_TESTING_SERVICE.swRegistered = {
-        error: err.message
+        error: err.message,
       };
 
       logMessage('Service worker register failed: ' + err.message);

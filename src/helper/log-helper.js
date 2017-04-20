@@ -15,6 +15,8 @@
 **/
 'use strict';
 
+/* eslint-disable no-console */
+
 const chalk = require('chalk');
 const winston = require('winston');
 
@@ -28,7 +30,7 @@ class LogHelper {
       winston.add(winston.transports.File, {
         filename: file,
         handleExceptions: true,
-        humanReadableUnhandledException: true
+        humanReadableUnhandledException: true,
       });
     } catch (err) {
       // NOOP

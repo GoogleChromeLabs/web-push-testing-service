@@ -37,7 +37,7 @@ class APIServer extends EventEmitter {
     this._expressApp = express();
     this._expressApp.use(bodyParser.json());
     this._expressApp.use(bodyParser.urlencoded({
-      extended: true
+      extended: true,
     }));
 
     this._expressApp.use(express.static(path.join(__dirname, '..', 'static')));
@@ -46,7 +46,7 @@ class APIServer extends EventEmitter {
     this._expressApp.get('/manifest/:gcmSenderId/', (request, response) => {
       /* eslint-disable camelcase */
       const manifestContent = {
-        gcm_sender_id: request.params.gcmSenderId
+        gcm_sender_id: request.params.gcmSenderId,
       };
       /* eslint-enable camelcase */
       response.send(JSON.stringify(manifestContent));
@@ -82,7 +82,7 @@ class APIServer extends EventEmitter {
         }
       );
 
-      this._expressServer.on('error', err => {
+      this._expressServer.on('error', (err) => {
         logHelper.error(`Unable to start service at ${this.getUrl()}. ` +
           `${err.message}`);
         reject(err);
@@ -132,7 +132,7 @@ class APIServer extends EventEmitter {
     }
 
     res.send({
-      data: data
+      data: data,
     });
   }
 
@@ -140,8 +140,8 @@ class APIServer extends EventEmitter {
     res.status(400).send({
       error: {
         id: errorId,
-        message: errorMsg
-      }
+        message: errorMsg,
+      },
     });
   }
 }

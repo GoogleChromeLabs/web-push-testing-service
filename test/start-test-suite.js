@@ -40,10 +40,10 @@ describe('Test start-test-suite API', function() {
       let responseBody = '';
       const curlProcess = spawn('curl', [
         url,
-        '-X', 'POST'
+        '-X', 'POST',
       ]);
 
-      curlProcess.stdout.on('data', data => {
+      curlProcess.stdout.on('data', (data) => {
         responseBody += data;
       });
 
@@ -51,11 +51,11 @@ describe('Test start-test-suite API', function() {
       //   console.log(`stderr: ${data}`);
       // });
 
-      curlProcess.on('error', err => {
+      curlProcess.on('error', (err) => {
         reject(err);
       });
 
-      curlProcess.on('close', code => {
+      curlProcess.on('close', (code) => {
         if (code === 0) {
           resolve(responseBody);
         } else {
@@ -69,16 +69,16 @@ describe('Test start-test-suite API', function() {
     const NUMBER_OF_ATTEMPTS = 5;
     let promiseChain = Promise.resolve();
     const testSuiteIds = [];
-    for (var i = 0; i < NUMBER_OF_ATTEMPTS; i++) {
+    for (let i = 0; i < NUMBER_OF_ATTEMPTS; i++) {
       promiseChain = promiseChain.then(() => {
         return fetch(`http://localhost:8090/api/start-test-suite/`, {
-          method: 'post'
+          method: 'post',
         })
-        .then(response => {
+        .then((response) => {
           response.status.should.equal(200);
           return response.json();
         })
-        .then(response => {
+        .then((response) => {
           testSuiteIds.push(response.data.testSuiteId);
         });
       });
@@ -102,13 +102,13 @@ describe('Test start-test-suite API', function() {
     let promiseChain = Promise.resolve();
 
     const testSuiteIds = [];
-    for (var i = 0; i < NUMBER_OF_ATTEMPTS; i++) {
+    for (let i = 0; i < NUMBER_OF_ATTEMPTS; i++) {
       promiseChain = promiseChain.then(() => {
         return performCurlRequest(`http://localhost:8090/api/start-test-suite/`)
-        .then(response => {
+        .then((response) => {
           return JSON.parse(response);
         })
-        .then(response => {
+        .then((response) => {
           testSuiteIds.push(response.data.testSuiteId);
         });
       });

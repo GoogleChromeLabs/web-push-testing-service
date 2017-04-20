@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
+
+/* eslint-disable no-console */
+
 self.addEventListener('push', function(event) {
   console.log('RECEIVED PUSH EVENT');
   let pushData = null;
@@ -22,7 +25,7 @@ self.addEventListener('push', function(event) {
 
   // Send message to page
   const returnedPromise = self.clients.matchAll({
-    includeUncontrolled: true
+    includeUncontrolled: true,
   })
   .then(function(clients) {
     const promises = clients.map(function(client) {
