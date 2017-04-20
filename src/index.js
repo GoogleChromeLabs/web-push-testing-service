@@ -25,22 +25,23 @@ const mkdirp = require('mkdirp');
 const seleniumFirefox = require('selenium-webdriver/firefox');
 
 const logHelper = require('./helper/log-helper.js');
+const browsersHelper = require('./helper/browsers-helper');
 const APIServer = require('./server/api-server.js');
 const TestSuite = require('./model/test-suite.js');
 
 // This may be needed: https://github.com/angular/protractor/issues/2419#issuecomment-213112857
 
 class WPTS {
-  constructor(port) {
+  constructor(port, supportedBrowsers, supportedVersions) {
     port = port ? port : 8090;
 
     this._availableTestSuiteId = 0;
     this._testSuites = {};
-    this._supportedBrowsers = [
+    this._supportedBrowsers = supportedBrowsers || [
       'chrome',
       'firefox'
     ];
-    this._supportedBrowserVersions = [
+    this._supportedBrowserVersions = supportedVersions || [
       'stable',
       'beta',
       'unstable'
@@ -60,20 +61,18 @@ class WPTS {
     logHelper.setLogFile(logFile);
   }
 
-  downloadBrowsers() {
-    return Promise.all([
-      seleniumAssistant.downloadBrowser('firefox', 'stable', 48),
-      seleniumAssistant.downloadBrowser('firefox', 'beta', 48),
-      seleniumAssistant.downloadBrowser('firefox', 'unstable', 48),
-      seleniumAssistant.downloadBrowser('chrome', 'stable', 48),
-      seleniumAssistant.downloadBrowser('chrome', 'beta', 48),
-      seleniumAssistant.downloadBrowser('chrome', 'unstable', 48)
-    ]);
+  downloadBrowsers(browsers) {
+    return browsersHelper.downloadBrowsers(browsers);
   }
 
   startService() {
-    return this.downloadBrowsers()
+    const browsers = this._supportedBrowsers.reduce((acc, name) => {
+      return acc.concat(this._supportedBrowserVersions.map(v => [name, v]));
+    }, []);
+    logHelper.info(`Downloading browsers: ${browsers.join(' ')}`);
+    return this.downloadBrowsers(browsers)
     .then(() => {
+      logHelper.info('Browsers downloaded');
       return this._apiServer.startListening();
     });
   }
@@ -286,6 +285,7 @@ class WPTS {
 
         const options = seleniumAssistantBrowser.getSeleniumOptions();
         options.addArguments(`user-data-dir=${tempPreferenceFile}/`);
+        options.addArguments(`no-sandbox`);
       } else if (seleniumAssistantBrowser.getSeleniumBrowserId() ===
         'firefox') {
         const ffProfile = new seleniumFirefox.Profile();

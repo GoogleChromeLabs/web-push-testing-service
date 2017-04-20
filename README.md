@@ -109,3 +109,11 @@ and error with have an 'id' and 'message' parameter.
 
     Input: {testSuiteId: <Your Test Suite ID>}
     Output: {data: {success: true}}
+
+### Specifying browsers
+
+Firefox and Chrome from three channels (`stable`, `beta`, `unstable`) are used by default. These values can be overridden by passing browsers and channels to the `start` call:
+
+```
+  web-push-testing-service start <Service Name> --browsers chrome,firefox --channels stable,beta
+```
