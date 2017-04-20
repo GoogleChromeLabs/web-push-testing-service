@@ -136,7 +136,6 @@ describe('Test get-subscription API', function() {
       setTimeout(resolve, 4000);
     })
     .then(() => {
-      console.log(VAPID_KEYS);
       webPush.setGCMAPIKey(GCM_DETAILS.apiKey);
       webPush.setVapidDetails(
         'mailto: web-push-testing-service@example.com',
