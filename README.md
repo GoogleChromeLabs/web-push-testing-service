@@ -56,8 +56,14 @@ and error with have an 'id' and 'message' parameter.
 
     http://localhost:8090/api/start-test-suite/
 
-    Input: Nothing
-    Output: Output: {data: {testSuiteId: <New ID>}}
+    **Input**: *Nothing*
+
+    **Output**
+    ```{
+      data: {
+        testSuiteId: <New ID>
+      }
+    }```
 
 1. Get a Subscription
     This method expected a testSuiteId, a browser name and the release version
@@ -68,19 +74,22 @@ and error with have an 'id' and 'message' parameter.
 
     http://localhost:8090/api/get-subscription/
 
-    Input: {
+    **Input**
+    ```{
         testSuiteId: <Test Suite ID Number>,
         browserName: <'chrome' | 'firefox'>,
         browserVersion: <'stable' | 'beta' | 'unstable' >,
         gcmSenderId: <Your GCM Sender ID>,
         vapidPublicKey: <Base64 URL Encode Vapid Public Key>
-    }
-    Output: {
+    }```
+
+    **Output**
+    ```{
         data: {
             testId: <ID for this test instance>,
             subscription: <A Subscription Object, will have endpoint and keys>
         }
-    }
+    }```
 
 1. Wait for notification to arrive
     Once your library has sent a message you can retrieve what details the
@@ -88,24 +97,35 @@ and error with have an 'id' and 'message' parameter.
 
     http://localhost:8090/api/get-notification-status/
 
-    Input: {
+    **Input**
+    ```{
         testSuiteId: <Test Suite ID Number>
         testId: <Test ID Number>
-    }
+    }```
 
-    Output: {
+    **Output**
+    ```{
         data: {
             messages: [
                 <Payload String>,
                 ...
             ]
         }
-    }
+    }```
 
 1. End the Test Suite
     This will end and close any currently open tests.
 
     http://localhost:8090/api/end-test-suite/
 
-    Input: {testSuiteId: <Your Test Suite ID>}
-    Output: {data: {success: true}}
+    **Input**
+    ```{
+      testSuiteId: <Your Test Suite ID>
+    }```
+
+    **Output**
+    ```{
+      data: {
+        success: true
+      }
+    }```
