@@ -25,6 +25,7 @@ const spawn = require('child_process').spawn;
 
 const logHelper = require('../helper/log-helper.js');
 
+
 class WPTSCLI {
   constructor() {
     storage.initSync();
@@ -108,10 +109,19 @@ class WPTSCLI {
 
     // This *shouldn't* throw an error, but due to the async nature
     // we want to be certain errors are surfaced
+    let intervalID;
     try {
       this.stopService(serviceName);
 
       logHelper.info('Starting service (This may take some time)....');
+
+      let elapsedIntervals = 0;
+      const intervalDurationSeconds = 5;
+      intervalID = setInterval(() => {
+        elapsedIntervals++;
+        logHelper.info(`...it's been ` +
+          `${elapsedIntervals * intervalDurationSeconds} seconds`);
+      }, intervalDurationSeconds * 1000);
 
       const options = {};
       if (flags.p || flags.port) {
@@ -138,14 +148,29 @@ class WPTSCLI {
           serviceProcess.unref();
 
           logHelper.info('Service Running');
+
+          if (intervalID) {
+            clearInterval(intervalID);
+          }
+
           process.exit(0);
         } else {
           logHelper.error(message.errorMessage);
+
+          if (intervalID) {
+            clearInterval(intervalID);
+          }
+
           process.exit(1);
         }
       });
     } catch (err) {
       logHelper.error(err.message);
+
+      if (intervalID) {
+        clearInterval(intervalID);
+      }
+
       process.exit(1);
     }
   }
