@@ -25,6 +25,7 @@ const spawn = require('child_process').spawn;
 
 const logHelper = require('../helper/log-helper.js');
 
+
 class WPTSCLI {
   constructor() {
     storage.initSync();
@@ -106,8 +107,6 @@ class WPTSCLI {
       return;
     }
 
-    // This *shouldn't* throw an error, but due to the async nature
-    // we want to be certain errors are surfaced
     try {
       this.stopService(serviceName);
 
