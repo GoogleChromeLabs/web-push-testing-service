@@ -92,7 +92,7 @@ describe('Test start-test-suite API', function() {
         }
 
         // Make sure the testsuite exists
-        (globalWPTS._testSuites[testSuiteIds[i]]).should.be.defined;
+        (globalWPTS._testSuites[testSuiteIds[i]]).should.exist;
       }
     });
   });
@@ -123,7 +123,7 @@ describe('Test start-test-suite API', function() {
         }
 
         // Make sure the testsuite exists
-        (globalWPTS._testSuites[testSuiteIds[i]]).should.be.defined;
+        (globalWPTS._testSuites[testSuiteIds[i]]).should.exist;
       }
     });
   });
