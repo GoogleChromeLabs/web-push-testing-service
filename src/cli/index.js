@@ -180,7 +180,6 @@ class WPTSCLI {
     console.log('    web-push-testing-service [command] [options]');
     console.log('');
     console.log('Command:');
-    console.log('    download-browsers');
     console.log('    start <service-id>');
     console.log('    stop <service-id>');
     console.log('');
