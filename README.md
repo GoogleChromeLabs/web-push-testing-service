@@ -15,6 +15,8 @@
 
 ## Why
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/GoogleChrome/web-push-testing-service.svg)](https://greenkeeper.io/)
+
 Testing web push is hard and with difference between browsers being an issue
 as standards are created and implemented, the best approach to ensure
 a library is up to date is to have integration tests. Sadly this involves
