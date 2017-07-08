@@ -22,7 +22,7 @@
   "devDependencies": {
     "chai": "^4.0.2",
     "eslint": "^4.1.1",
-    "eslint-config-google": "^0.8.0",
+    "eslint-config-google": "^0.9.0",
     "mocha": "^3.0.2",
     "node-fetch": "^1.5.3",
     "npm-publish-scripts": "^4.1.16"
