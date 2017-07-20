@@ -318,13 +318,13 @@ class WPTS {
         if (seleniumAssistantBrowser.getId() === 'firefox') {
           driver.setContext(seleniumFirefox.Context.CHROME);
           return driver.executeScript((url) => {
-            /* global Components, Services */
-            Components.utils.import('resource://gre/modules/Services.jsm');
-            const uri = Services.io.newURI(url, null, null);
-            const principal = Services.scriptSecurityManager
-              .getCodebasePrincipal(uri);
-            Services.perms.addFromPrincipal(
-              principal, 'desktop-notification', Services.perms.ALLOW_ACTION);
+              /* global Components, Services */
+              Components.utils.import('resource://gre/modules/Services.jsm');
+              const uri = Services.io.newURI(url, null, null);
+              const principal = Services.scriptSecurityManager
+                .getCodebasePrincipal(uri);
+              Services.perms.addFromPrincipal(
+                principal, 'desktop-notification', Services.perms.ALLOW_ACTION);
           }, this._apiServer.getUrl())
           .then(() => {
             driver.setContext(seleniumFirefox.Context.CONTENT);
