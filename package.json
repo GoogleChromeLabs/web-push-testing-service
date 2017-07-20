@@ -11,7 +11,7 @@
     "chromedriver": "^2.29.0",
     "del": "^2.2.2",
     "express": "^4.14.0",
-    "geckodriver": "1.6.1",
+    "geckodriver": "1.8.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "node-persist": "^2.0.2",
