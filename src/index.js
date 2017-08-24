@@ -289,8 +289,6 @@ class WPTS {
       } else if (seleniumAssistantBrowser.getId() ===
         'firefox') {
         const ffProfile = new seleniumFirefox.Profile();
-        ffProfile.setPreference('security.turn_off_all_security_so_that_' +
-          'viruses_can_take_over_this_computer', true);
         ffProfile.setPreference('dom.push.testing.ignorePermission', true);
         ffProfile.setPreference('notification.prompt.testing', true);
         ffProfile.setPreference('notification.prompt.testing.allow', true);
@@ -313,24 +311,6 @@ class WPTS {
       }
 
       return driver.get(this._apiServer.getUrl() + '/' + urlGETArgs)
-      .then(() => {
-        // This adds extra code to make notifications auto-grant perission
-        if (seleniumAssistantBrowser.getId() === 'firefox') {
-          driver.setContext(seleniumFirefox.Context.CHROME);
-          return driver.executeScript((url) => {
-            /* global Components, Services */
-            Components.utils.import('resource://gre/modules/Services.jsm');
-            const uri = Services.io.newURI(url, null, null);
-            const principal = Services.scriptSecurityManager
-              .getCodebasePrincipal(uri);
-            Services.perms.addFromPrincipal(
-              principal, 'desktop-notification', Services.perms.ALLOW_ACTION);
-          }, this._apiServer.getUrl())
-          .then(() => {
-            driver.setContext(seleniumFirefox.Context.CONTENT);
-          });
-        }
-      })
       .then(() => {
         return driver.wait(() => {
           return driver.executeScript(() => {
