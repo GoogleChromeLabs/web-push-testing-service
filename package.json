@@ -11,11 +11,11 @@
     "chromedriver": "^2.31.0",
     "del": "^3.0.0",
     "express": "^4.14.0",
-    "geckodriver": "1.8.1",
+    "geckodriver": "1.9.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "node-persist": "^2.0.2",
-    "selenium-assistant": "5.1.1",
+    "selenium-assistant": "5.2.0",
     "web-push": "^3.1.0",
     "winston": "^2.2.0"
   },
@@ -23,7 +23,7 @@
     "chai": "^4.0.2",
     "eslint": "^4.1.1",
     "eslint-config-google": "^0.9.0",
-    "mocha": "^3.0.2",
+    "mocha": "^4.0.1",
     "node-fetch": "^1.5.3",
     "npm-publish-scripts": "^4.1.16"
   },
