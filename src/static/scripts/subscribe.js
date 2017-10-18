@@ -157,10 +157,13 @@ window.PUSH_TESTING_SERVICE.start = function() {
         return registration.pushManager.subscribe(subscribeOptions)
         .then((subscription) => {
           logMessage('Registration is subscribed for push.');
+          const detailsToSend = Object.assign(subscription, {
+            supportedContentEncodings: PushManager.supportedContentEncodings,
+          });
           window.PUSH_TESTING_SERVICE.subscription = JSON.parse(
-            JSON.stringify(subscription)
+            JSON.stringify(detailsToSend)
           );
-          subscriptionElement.textContent = JSON.stringify(subscription);
+          subscriptionElement.textContent = JSON.stringify(detailsToSend);
         })
         .catch((err) => {
           window.PUSH_TESTING_SERVICE.subscription = {
