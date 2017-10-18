@@ -127,6 +127,10 @@ describe('Test get-subscription API', function() {
       (typeof pushSubscription.keys.p256dh).should.not.equal('undefined');
       (typeof pushSubscription.keys.auth).should.not.equal('undefined');
     }
+
+    if (pushSubscription.contentEncodings) {
+      Array.isArray(pushSubscription.contentEncodings).should.equal(true);
+    }
   };
 
   const sendPushMessage = (suiteId, testId, subscription) => {
@@ -522,6 +526,7 @@ describe('Test get-subscription API', function() {
       })
       .then((response) => {
         if (response.error) {
+          console.error(response.error);
           response.error.id.should.equal('bad_browser_support');
           return;
         }

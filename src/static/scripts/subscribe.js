@@ -157,12 +157,22 @@ window.PUSH_TESTING_SERVICE.start = function() {
         return registration.pushManager.subscribe(subscribeOptions)
         .then((subscription) => {
           logMessage('Registration is subscribed for push.');
-          const detailsToSend = Object.assign(subscription, {
-            supportedContentEncodings: PushManager.supportedContentEncodings,
-          });
-          window.PUSH_TESTING_SERVICE.subscription = JSON.parse(
-            JSON.stringify(detailsToSend)
+          // Parse the subscription so we have the output we want to return.
+          const parsedSubscription = JSON.parse(
+            JSON.stringify(subscription)
           );
+
+          // Add supportedContentEncodings for libraries that want this.
+          const extraAttribs = {};
+          if (PushManager.supportedContentEncodings) {
+            extraAttribs.supportedContentEncodings =
+              PushManager.supportedContentEncodings;
+          }
+
+          const detailsToSend = Object.assign(parsedSubscription, extraAttribs);
+
+          // Make these details available.
+          window.PUSH_TESTING_SERVICE.subscription = detailsToSend;
           subscriptionElement.textContent = JSON.stringify(detailsToSend);
         })
         .catch((err) => {
