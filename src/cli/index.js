@@ -119,6 +119,13 @@ class WPTSCLI {
       if (flags['log-file']) {
         options.logFile = flags['log-file'];
       }
+      if (flags.browsers) {
+        options.browsers = flags.browsers.replace(' ', '').split(',');
+      }
+      if (flags.browserVersions) {
+        options.browserVersions =
+          flags.browserVersions.replace(' ', '').split(',');
+      }
 
       let stdioArgs = ['ipc', 'ignore', 'ignore'];
 
