@@ -31,16 +31,16 @@ const TestSuite = require('./model/test-suite.js');
 // This may be needed: https://github.com/angular/protractor/issues/2419#issuecomment-213112857
 
 class WPTS {
-  constructor(port) {
+  constructor(port, browsers, browserVersions) {
     port = port ? port : 8090;
 
     this._availableTestSuiteId = 0;
     this._testSuites = {};
-    this._supportedBrowsers = [
+    this._supportedBrowsers = browsers || [
       'chrome',
       'firefox',
     ];
-    this._supportedBrowserVersions = [
+    this._supportedBrowserVersions = browserVersions || [
       'stable',
       'beta',
       'unstable',
@@ -61,14 +61,15 @@ class WPTS {
   }
 
   downloadBrowsers() {
-    return Promise.all([
-      seleniumAssistant.downloadLocalBrowser('firefox', 'stable', 48),
-      seleniumAssistant.downloadLocalBrowser('firefox', 'beta', 48),
-      seleniumAssistant.downloadLocalBrowser('firefox', 'unstable', 48),
-      seleniumAssistant.downloadLocalBrowser('chrome', 'stable', 48),
-      seleniumAssistant.downloadLocalBrowser('chrome', 'beta', 48),
-      seleniumAssistant.downloadLocalBrowser('chrome', 'unstable', 48),
-    ]);
+    const browserDownloads = [];
+    this._supportedBrowsers.forEach((browser) => {
+      this._supportedBrowserVersions.forEach((version) => {
+        browserDownloads.push(
+          seleniumAssistant.downloadLocalBrowser(browser, version, 48)
+        );
+      });
+    });
+    return Promise.all(browserDownloads);
   }
 
   startService() {
