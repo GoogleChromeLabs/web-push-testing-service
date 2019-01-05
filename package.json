@@ -1,7 +1,7 @@
 {
   "name": "web-push-testing-service",
   "description": "A service that can be run locally or on a CLI to manage testing of web push in a language agnostic way",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "bin": {
     "web-push-testing-service": "./src/bin/cli.js"
   },
@@ -15,7 +15,7 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "node-persist": "^2.0.2",
-    "selenium-assistant": "5.2.0",
+    "selenium-assistant": "^5.3.0",
     "web-push": "^3.1.0",
     "winston": "^2.2.0"
   },
