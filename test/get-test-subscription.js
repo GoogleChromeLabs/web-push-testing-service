@@ -22,11 +22,6 @@ require('chai').should();
 
 const VAPID_KEYS = webPush.generateVAPIDKeys();
 
-const GCM_DETAILS = {
-  senderId: '914034011562',
-  apiKey: 'AIzaSyBSBJfbEP3Upq-fkuDVDep9YgNUGHymKxs',
-};
-
 describe('Test get-subscription API', function() {
   this.retries(2);
 
@@ -42,10 +37,6 @@ describe('Test get-subscription API', function() {
     {
       browser: 'chrome',
       version: 'beta',
-    },
-    {
-      browser: 'chrome',
-      version: 'unstable',
     },
     {
       browser: 'firefox',
@@ -141,7 +132,6 @@ describe('Test get-subscription API', function() {
     })
     .then(() => {
       console.log(VAPID_KEYS);
-      webPush.setGCMAPIKey(GCM_DETAILS.apiKey);
       webPush.setVapidDetails(
         'mailto: web-push-testing-service@example.com',
         VAPID_KEYS.publicKey,
@@ -447,87 +437,11 @@ describe('Test get-subscription API', function() {
       })
       .then((response) => {
         if (response.error) {
-          if (response.error.id !== 'bad_browser_support') {
+          if (response.error.id !== 'unable_to_get_subscription') {
             console.log(response.error);
           }
 
-          response.error.id.should.equal('bad_browser_support');
-          return;
-        }
-
-        validateSubscriptionResponse(response);
-
-        return sendPushMessage(globalTestSuiteId, response.data.testId,
-          response.data.subscription);
-      });
-    });
-
-    it(`should be able to get a subscription from ${browserVariant.browser} - ${browserVariant.version} with a GCM Sender ID`, function() {
-      // This requires starting / stopping selenium tests
-      if (process.env.TRAVIS) {
-        this.retries(3);
-      }
-      this.timeout(60000);
-
-      return fetch(`http://localhost:8090/api/get-subscription/`, {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          testSuiteId: globalTestSuiteId,
-          browserName: browserVariant.browser,
-          browserVersion: browserVariant.version,
-          gcmSenderId: GCM_DETAILS.senderId,
-        }),
-      })
-      .then((response) => {
-        return response.json();
-      })
-      .then((response) => {
-        if (response.error) {
-          if (response.error.id !== 'bad_browser_support') {
-            console.log(response.error);
-          }
-
-          response.error.id.should.equal('bad_browser_support');
-          return;
-        }
-
-        validateSubscriptionResponse(response);
-
-        return sendPushMessage(globalTestSuiteId, response.data.testId,
-          response.data.subscription);
-      });
-    });
-
-    it(`should be able to get a subscription from ${browserVariant.browser} - ${browserVariant.version} with VAPID and a GCM Sender ID`, function() {
-      // This requires starting / stopping selenium tests
-      if (process.env.TRAVIS) {
-        this.retries(3);
-      }
-      this.timeout(120000);
-
-      return fetch(`http://localhost:8090/api/get-subscription/`, {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          testSuiteId: globalTestSuiteId,
-          browserName: browserVariant.browser,
-          browserVersion: browserVariant.version,
-          vapidPublicKey: VAPID_KEYS.publicKey,
-          gcmSenderId: GCM_DETAILS.senderId,
-        }),
-      })
-      .then((response) => {
-        return response.json();
-      })
-      .then((response) => {
-        if (response.error) {
-          console.error(response.error);
-          response.error.id.should.equal('bad_browser_support');
+          response.error.id.should.equal('unable_to_get_subscription');
           return;
         }
 
