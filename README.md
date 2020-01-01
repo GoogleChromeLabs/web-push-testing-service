@@ -71,9 +71,6 @@ and error with have an 'id' and 'message' parameter.
     This method expected a testSuiteId, a browser name and the release version
     and it will return a subscription.
 
-    The gcmSenderId and vapidPublicKey parameters are options BUT Chrome
-    requires one of them to work, otherwise you must catch the error.
-
     http://localhost:8090/api/get-subscription/
 
     **Input**
@@ -82,7 +79,6 @@ and error with have an 'id' and 'message' parameter.
         testSuiteId: <Test Suite ID Number>,
         browserName: <'chrome' | 'firefox'>,
         browserVersion: <'stable' | 'beta' | 'unstable' >,
-        gcmSenderId: <Your GCM Sender ID>,
         vapidPublicKey: <Base64 URL Encode Vapid Public Key>
     }
     ```

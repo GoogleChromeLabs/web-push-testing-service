@@ -186,16 +186,6 @@ class WPTS {
       optionalArgs.vapidPublicKey = args.vapidPublicKey;
     }
 
-    if (args.gcmSenderId) {
-      if (typeof args.gcmSenderId !== 'string') {
-        APIServer.sendErrorResponse(res, 'invalid_gcm_sender_id',
-          `Your GCM Sender ID must be a string.`);
-        return;
-      }
-
-      optionalArgs.gcmSenderId = args.gcmSenderId;
-    }
-
     return this.initiateTestInstance(args.testSuiteId, optionalArgs,
       webDriverInstance)
     .then((testDetails) => {
