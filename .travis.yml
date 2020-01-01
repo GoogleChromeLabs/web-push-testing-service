@@ -1,22 +1,27 @@
 sudo: required
 dist: trusty
+env: DISPLAY=':99.0'
 language: node_js
 
-cache:
-  directories:
-    - node_modules
-    - ~/.selenium-assistant
+addons:
+  apt:
+    update: true
+    sources:
+      - google-chrome
+    packages:
+      - dpkg
+      - google-chrome-stable
 
 node_js:
-  - '6'
+  - '12'
   - '8'
+  - '6'
 
 install:
   - npm install
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
-  - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start || echo \"Unable to start virtual display.\""
   - sleep 3 # give xvfb some time to start
 
