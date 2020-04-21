@@ -42,16 +42,6 @@ class APIServer extends EventEmitter {
 
     this._expressApp.use(express.static(path.join(__dirname, '..', 'static')));
 
-    // Add manifest handler
-    this._expressApp.get('/manifest/:gcmSenderId/', (request, response) => {
-      /* eslint-disable camelcase */
-      const manifestContent = {
-        gcm_sender_id: request.params.gcmSenderId,
-      };
-      /* eslint-enable camelcase */
-      response.send(JSON.stringify(manifestContent));
-    });
-
     this._expressApp.post('/api/status-check', this.statusCheck.bind(this));
     this._expressApp.post('/api/start-test-suite/',
       this.startTestSuite.bind(this));

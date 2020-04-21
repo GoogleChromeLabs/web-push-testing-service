@@ -70,7 +70,6 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 let vapidElement = document.querySelector('.js-vapid-element');
-let gcmElement = document.querySelector('.js-gcm-element');
 let subscriptionElement = document.querySelector('.js-subscription-element');
 
 let getParamsString = window.location.search.replace('?', '');
@@ -99,18 +98,6 @@ if (getParamsArgs.vapidPublicKey) {
     `"${convertedVapidKey}"`;
 } else {
   vapidElement.textContent = 'None';
-}
-
-if (getParamsArgs.gcmSenderId) {
-  gcmElement.textContent = getParamsArgs.gcmSenderId;
-
-  let linkElement = document.createElement('link');
-  linkElement.rel = 'manifest';
-  linkElement.href = '/manifest/' + getParamsArgs.gcmSenderId + '/';
-
-  document.head.appendChild(linkElement);
-} else {
-  gcmElement = 'none';
 }
 
 window.PUSH_TESTING_SERVICE.start = function() {
