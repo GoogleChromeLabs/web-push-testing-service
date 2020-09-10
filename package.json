@@ -24,7 +24,7 @@
     "eslint": "^4.1.1",
     "eslint-config-google": "^0.9.0",
     "mocha": "^4.0.1",
-    "node-fetch": "^1.5.3",
+    "node-fetch": "^2.6.1",
     "npm-publish-scripts": "^4.1.16"
   },
   "license": "Apache-2.0",
